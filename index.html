@@ -580,34 +580,36 @@ let data = JSON.parse(JSON.stringify(SEED));
 let currentView = 'dashboard';
 let currentLessonId = null;
 let _suppressSave = false; // Firestore에서 받은 업데이트는 다시 쓰지 않게
+let saveTimer = null;
 
 function saveData() {
 
-  console.log('saveData 호출됨', _suppressSave);
+  if (_suppressSave) return;
 
-  if (_suppressSave) {
-    console.warn('저장 차단됨');
-    return;
-  }
+  clearTimeout(saveTimer);
 
-  data.updated = new Date().toISOString();
+  saveTimer = setTimeout(() => {
 
-  document.getElementById('updated').textContent =
-    '최종 수정: ' + new Date().toLocaleString('ko-KR');
+    data.updated = new Date().toISOString();
 
-  if (window.fbSetDoc) {
+    document.getElementById('updated').textContent =
+      '최종 수정: ' + new Date().toLocaleString('ko-KR');
 
-    console.log('Firestore 저장 시도');
+    if (window.fbSetDoc) {
 
-    window.fbSetDoc(data)
-      .then(() => {
-        console.log('Firestore 저장 성공');
-      })
-      .catch(e => {
-        console.error(e);
-        toast('동기화 실패: ' + e.message, 'error');
-      });
-  }
+      console.log('Firestore 저장 실행');
+
+      window.fbSetDoc(data)
+        .then(() => {
+          console.log('Firestore 저장 성공');
+        })
+        .catch(e => {
+          console.error(e);
+          toast('동기화 실패: ' + e.message, 'error');
+        });
+    }
+
+  }, 800); // 0.8초 동안 추가 입력 없을 때만 저장
 }
   data.updated = new Date().toISOString();
   document.getElementById('updated').textContent = '최종 수정: ' + new Date().toLocaleString('ko-KR');
@@ -1234,14 +1236,11 @@ function startFirestore() {
     // 🔥 내가 방금 저장한 echo는 완전히 무시
     if (isSelfWrite) return;
 
-    _suppressSave = true;
     data = snap.data();
     if (!data.lessons || data.lessons.length === 0) {
       console.warn('Firestore 데이터 비어있음');
-      _suppressSave = false;
       return;
     }
-    _suppressSave = false;
     const u = data.updated ? new Date(data.updated).toLocaleString('ko-KR') : '—';
     document.getElementById('updated').textContent = '🟢 실시간 · 최종 ' + u;
     // 본인이 방금 저장한 echo면 UI 갱신 스킵 (드롭다운/달력 보호)
