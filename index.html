@@ -334,6 +334,11 @@ href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/prete
       <option value="pending">📄 원고 대기</option>
       <option value="received">📄 원고 수령</option>
     </select>
+    <select id="filter-sort">
+      <option value="id">↕ 차시ID 순</option>
+      <option value="phase">↕ Phase 순</option>
+      <option value="urgency">↕ 우선순위 순</option>
+    </select>
     <select id="filter-issue">
       <option value="">이슈 전체</option>
       <option value="open">미해결 이슈</option>
@@ -726,6 +731,40 @@ function getLessonScheduleStatus(l) {
   if (maxDelay > 0) return {state:'delayed', label:`${maxDelay}일 지연`};
   return {state:'on-track', label:'정상'};
 }
+// 차시ID 자연 정렬 — 한글 유형 + 숫자-숫자
+const _phaseOrder = { 'Phase 1': 1, 'Phase 2': 2, 'Phase 3': 3 };
+const _urgOrder = { high: 0, medium: 1, low: 2 };
+const _typeOrder = { '시각': 0, '청각': 1, '뇌병변': 2 };
+function parseLessonId(id) {
+  const m = (id||'').match(/^(\S+)\s+(\d+)-(\d+)/);
+  if (!m) return [id, 0, 0];
+  return [m[1], parseInt(m[2]), parseInt(m[3])];
+}
+function compareLessonId(a, b) {
+  const [ta, na, ma] = parseLessonId(a);
+  const [tb, nb, mb] = parseLessonId(b);
+  const ot = (_typeOrder[ta] ?? 99) - (_typeOrder[tb] ?? 99);
+  if (ot !== 0) return ot;
+  if (na !== nb) return na - nb;
+  return ma - mb;
+}
+function sortLessons(arr, sortBy) {
+  const a = arr.slice();
+  if (sortBy === 'phase') {
+    a.sort((x, y) => {
+      const d = (_phaseOrder[x.phase]||99) - (_phaseOrder[y.phase]||99);
+      return d !== 0 ? d : compareLessonId(x.id, y.id);
+    });
+  } else if (sortBy === 'urgency') {
+    a.sort((x, y) => {
+      const d = (_urgOrder[x.urgency||'medium']) - (_urgOrder[y.urgency||'medium']);
+      return d !== 0 ? d : compareLessonId(x.id, y.id);
+    });
+  } else {
+    a.sort((x, y) => compareLessonId(x.id, y.id));
+  }
+  return a;
+}
 function getFiltered() {
   const f = {
     phase: document.getElementById('filter-phase').value,
@@ -746,6 +785,8 @@ function getFiltered() {
     if (f.issue === 'none' && l.issues.filter(i => i.status === 'open').length > 0) return false;
     return true;
   });
+  const sortBy = document.getElementById('filter-sort')?.value || 'id';
+  return sortLessons(filtered, sortBy);
 }
 function lessonCard(l, draggable = false) {
   const openIssues = l.issues.filter(i => i.status === 'open').length;
@@ -1295,7 +1336,7 @@ document.querySelectorAll('.view-tabs button').forEach(b => {
     render();
   });
 });
-['filter-phase','filter-type','filter-urgency','filter-manuscript','filter-issue','filter-search'].forEach(id => {
+['filter-phase','filter-type','filter-urgency','filter-manuscript','filter-sort','filter-issue','filter-search'].forEach(id => {
   const el = document.getElementById(id);
   if (!el) return;
   el.addEventListener('input', render);
