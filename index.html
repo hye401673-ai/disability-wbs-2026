@@ -4,7 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>2026 장애유형별 평생교육 디지털 콘텐츠 · WBS</title>
-<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/[email protected]/dist/web/variable/pretendardvariable.css" />
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600&family=Noto+Serif+KR:wght@500;700;900&display=swap" rel="stylesheet">
@@ -611,11 +612,6 @@ function saveData() {
 
   }, 800); // 0.8초 동안 추가 입력 없을 때만 저장
 }
-  data.updated = new Date().toISOString();
-  document.getElementById('updated').textContent = '최종 수정: ' + new Date().toLocaleString('ko-KR');
-  if (window.fbSetDoc) {
-    window.fbSetDoc(data).catch(e => toast('동기화 실패: ' + e.message, 'error'));
-  }
 
 // ============== Helpers ==============
 function phaseClass(phase) {
