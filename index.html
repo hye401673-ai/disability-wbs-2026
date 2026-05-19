@@ -1211,10 +1211,9 @@ function startFirestore() {
 
     _suppressSave = true;
     data = snap.data();
-    if (!data.lessons || data.lessons.length === 0 || data.version !== SEED.version) {
+    if (!data.lessons || data.lessons.length === 0) {
+      console.warn('Firestore 데이터 비어있음');
       _suppressSave = false;
-      data = JSON.parse(JSON.stringify(SEED));
-      saveData();
       return;
     }
     _suppressSave = false;
