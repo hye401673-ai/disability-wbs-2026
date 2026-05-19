@@ -247,10 +247,10 @@
       "stages": {
         "plan": {
           "status": "in-progress",
-          "start": "2026-05-11",
+          "start": "2026-05-18",
           "end": "2026-05-22",
-          "actualStart": "2026-05-11",
-          "actualEnd": "2026-05-22",
+          "actualStart": "2026-05-18",
+          "actualEnd": "",
           "owner": [
             "최문선"
           ],
@@ -769,8 +769,8 @@
       "stages": {
         "plan": {
           "status": "todo",
-          "start": "2026-06-22",
-          "end": "2026-06-26",
+          "start": "2026-06-01",
+          "end": "2026-06-05",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -780,8 +780,8 @@
         },
         "ui": {
           "status": "todo",
-          "start": "2026-06-22",
-          "end": "2026-06-26",
+          "start": "2026-06-08",
+          "end": "2026-06-19",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -791,8 +791,8 @@
         },
         "art": {
           "status": "todo",
-          "start": "2026-06-22",
-          "end": "2026-06-26",
+          "start": "2026-06-08",
+          "end": "2026-06-19",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -802,8 +802,8 @@
         },
         "dev": {
           "status": "todo",
-          "start": "2026-06-29",
-          "end": "2026-07-10",
+          "start": "2026-06-22",
+          "end": "2026-07-03",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -813,8 +813,8 @@
         },
         "video": {
           "status": "todo",
-          "start": "2026-06-29",
-          "end": "2026-07-10",
+          "start": "2026-06-22",
+          "end": "2026-07-03",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -824,8 +824,8 @@
         },
         "qa": {
           "status": "todo",
-          "start": "2026-07-10",
-          "end": "2026-07-11",
+          "start": "2026-07-03",
+          "end": "2026-07-04",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -1465,8 +1465,8 @@
       "stages": {
         "plan": {
           "status": "todo",
-          "start": "2026-06-22",
-          "end": "2026-06-26",
+          "start": "2026-06-08",
+          "end": "2026-06-12",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -1476,7 +1476,7 @@
         },
         "ui": {
           "status": "todo",
-          "start": "2026-06-22",
+          "start": "2026-06-15",
           "end": "2026-06-26",
           "actualStart": "",
           "actualEnd": "",
@@ -1487,7 +1487,7 @@
         },
         "art": {
           "status": "todo",
-          "start": "2026-06-22",
+          "start": "2026-06-15",
           "end": "2026-06-26",
           "actualStart": "",
           "actualEnd": "",
@@ -1813,8 +1813,8 @@
       "stages": {
         "plan": {
           "status": "todo",
-          "start": "2026-06-01",
-          "end": "2026-06-05",
+          "start": "2026-06-08",
+          "end": "2026-06-12",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -1824,8 +1824,8 @@
         },
         "ui": {
           "status": "todo",
-          "start": "2026-06-01",
-          "end": "2026-06-05",
+          "start": "2026-06-15",
+          "end": "2026-06-26",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -1835,8 +1835,8 @@
         },
         "art": {
           "status": "todo",
-          "start": "2026-06-01",
-          "end": "2026-06-05",
+          "start": "2026-06-15",
+          "end": "2026-06-26",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -1846,8 +1846,8 @@
         },
         "dev": {
           "status": "todo",
-          "start": "2026-06-08",
-          "end": "2026-06-19",
+          "start": "2026-06-29",
+          "end": "2026-07-10",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -1857,8 +1857,8 @@
         },
         "video": {
           "status": "todo",
-          "start": "2026-06-08",
-          "end": "2026-06-19",
+          "start": "2026-06-29",
+          "end": "2026-07-10",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -1868,8 +1868,8 @@
         },
         "qa": {
           "status": "todo",
-          "start": "2026-06-22",
-          "end": "2026-06-24",
+          "start": "2026-07-10",
+          "end": "2026-07-11",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -1881,7 +1881,7 @@
       "issues": [
         {
           "id": "I-tlv6up",
-          "title": "원고미비",
+          "title": "(소성현) 원고미비",
           "description": "원고 보완 요청 필요",
           "status": "open",
           "priority": "high",
@@ -2345,9 +2345,9 @@
       "stages": {
         "plan": {
           "status": "in-progress",
-          "start": "2026-06-01",
-          "end": "2026-06-05",
-          "actualStart": "2026-05-19",
+          "start": "2026-05-25",
+          "end": "2026-05-29",
+          "actualStart": "",
           "actualEnd": "",
           "owner": [
             "최문선"
@@ -3139,8 +3139,8 @@
         },
         "ui": {
           "status": "todo",
-          "start": "2026-06-01",
-          "end": "2026-06-05",
+          "start": "2026-06-08",
+          "end": "2026-06-19",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -3150,8 +3150,8 @@
         },
         "art": {
           "status": "todo",
-          "start": "2026-06-01",
-          "end": "2026-06-05",
+          "start": "2026-06-08",
+          "end": "2026-06-19",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -3161,8 +3161,8 @@
         },
         "dev": {
           "status": "todo",
-          "start": "2026-06-08",
-          "end": "2026-06-19",
+          "start": "2026-06-22",
+          "end": "2026-07-03",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -3172,8 +3172,8 @@
         },
         "video": {
           "status": "todo",
-          "start": "2026-06-08",
-          "end": "2026-06-19",
+          "start": "2026-06-22",
+          "end": "2026-07-03",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -3183,8 +3183,8 @@
         },
         "qa": {
           "status": "todo",
-          "start": "2026-06-22",
-          "end": "2026-06-24",
+          "start": "2026-07-03",
+          "end": "2026-07-04",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -4433,8 +4433,8 @@
       "stages": {
         "plan": {
           "status": "todo",
-          "start": "2026-06-22",
-          "end": "2026-06-26",
+          "start": "2026-06-01",
+          "end": "2026-06-05",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -4444,8 +4444,8 @@
         },
         "ui": {
           "status": "todo",
-          "start": "2026-06-22",
-          "end": "2026-06-26",
+          "start": "2026-06-08",
+          "end": "2026-06-19",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -4455,8 +4455,8 @@
         },
         "art": {
           "status": "todo",
-          "start": "2026-06-22",
-          "end": "2026-06-26",
+          "start": "2026-06-08",
+          "end": "2026-06-19",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -4466,8 +4466,8 @@
         },
         "dev": {
           "status": "todo",
-          "start": "2026-06-29",
-          "end": "2026-07-10",
+          "start": "2026-06-22",
+          "end": "2026-07-03",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -4477,8 +4477,8 @@
         },
         "video": {
           "status": "todo",
-          "start": "2026-06-29",
-          "end": "2026-07-10",
+          "start": "2026-06-22",
+          "end": "2026-07-03",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -4488,8 +4488,8 @@
         },
         "qa": {
           "status": "todo",
-          "start": "2026-07-10",
-          "end": "2026-07-11",
+          "start": "2026-07-03",
+          "end": "2026-07-04",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -5042,8 +5042,8 @@
       "stages": {
         "plan": {
           "status": "todo",
-          "start": "2026-06-22",
-          "end": "2026-06-26",
+          "start": "2026-06-08",
+          "end": "2026-06-12",
           "actualStart": "",
           "actualEnd": "",
           "owner": [
@@ -5053,7 +5053,7 @@
         },
         "ui": {
           "status": "todo",
-          "start": "2026-06-22",
+          "start": "2026-06-15",
           "end": "2026-06-26",
           "actualStart": "",
           "actualEnd": "",
@@ -5064,7 +5064,7 @@
         },
         "art": {
           "status": "todo",
-          "start": "2026-06-22",
+          "start": "2026-06-15",
           "end": "2026-06-26",
           "actualStart": "",
           "actualEnd": "",
