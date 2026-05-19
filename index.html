@@ -11,7 +11,7 @@ href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/prete
 <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600&family=Noto+Serif+KR:wght@500;700;900&display=swap" rel="stylesheet">
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-  import { getFirestore, doc, setDoc, onSnapshot, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+  import { getFirestore, doc, setDoc, onSnapshot, terminate } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
   const firebaseConfig = {
     apiKey: "AIzaSyAGiSO8JM8waJQz7NeyFBdRoTUfACx8aCM",
     authDomain: "disability-wbs-2026.firebaseapp.com",
@@ -23,10 +23,10 @@ href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/prete
   };
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  enableIndexedDbPersistence(db).catch(()=>{});
   const docRef = doc(db, 'wbs', 'main');
   window.fbSetDoc = (d) => setDoc(docRef, d);
-  window.fbOnSnap = (cb) => onSnapshot(docRef, cb);
+  window.fbOnSnap = (cb, errCb) => onSnapshot(docRef, cb, errCb || (()=>{}));
+  window.fbTerminate = () => terminate(db);
   window.fbReady = true;
   document.dispatchEvent(new Event('fbready'));
 </script>
@@ -580,43 +580,74 @@ seedIssues.forEach(([lid, title, desc, prio, status, date]) => {
 let data = JSON.parse(JSON.stringify(SEED));
 let currentView = 'dashboard';
 let currentLessonId = null;
-let _suppressSave = false; // Firestore에서 받은 업데이트는 다시 쓰지 않게
+let _suppressSave = false; // Firestore echo 재저장 방지
 let saveTimer = null;
-let isSaving = false;
+let lastSavedHash = '';
+let firestoreDisabled = false; // quota 초과 시 true
+const LOCAL_KEY = 'wbs-disability-2026';
+
+function dataHash(d) {
+  try {
+    const s = JSON.stringify(d);
+    return s.length + ':' + s.charCodeAt(0) + ':' + s.charCodeAt(Math.floor(s.length/2)) + ':' + s.slice(-30);
+  } catch(e) { return Math.random().toString(); }
+}
+
+function saveLocal() {
+  try {
+    data.updated = new Date().toISOString();
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
+  } catch(e) {}
+}
+
+function loadFromLocal() {
+  try {
+    const local = localStorage.getItem(LOCAL_KEY);
+    if (!local) return false;
+    const parsed = JSON.parse(local);
+    if (parsed && parsed.lessons && parsed.lessons.length > 0 && parsed.version === SEED.version) {
+      data = parsed;
+      lastSavedHash = dataHash(data);
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+function updateStatusLabel() {
+  const u = data.updated ? new Date(data.updated).toLocaleString('ko-KR') : '—';
+  const el = document.getElementById('updated');
+  if (el) el.textContent = '최종 ' + u + (firestoreDisabled ? ' · ⚠ 로컬 전용' : ' · 🟢 실시간');
+}
 
 function saveData() {
-
   if (_suppressSave) return;
-  if (isSaving) return;
 
+  // 1) 즉시 로컬 저장 — Firestore 실패해도 데이터 안전
+  saveLocal();
+  updateStatusLabel();
+
+  // 2) Firestore 꺼져있으면 끝
+  if (firestoreDisabled || !window.fbSetDoc) return;
+
+  // 3) Firestore는 2초 debounce + 변경 hash 체크
   clearTimeout(saveTimer);
-  
   saveTimer = setTimeout(() => {
-
-    data.updated = new Date().toISOString();
-
-    document.getElementById('updated').textContent =
-      '최종 수정: ' + new Date().toLocaleString('ko-KR');
-
-    if (window.fbSetDoc) {
-
-      console.log('Firestore 저장 실행');
-
-      isSaving = true;
-      window.fbSetDoc(data)
-        .then(() => {
-          console.log('Firestore 저장 성공');
-        })
-        .catch(e => {
-          console.error(e);
-          toast('동기화 실패: ' + e.message, 'error');
-        })
-        .finally(() => {
-          isSaving = false;
-        });
-    }
-
-  }, 800); // 0.8초 동안 추가 입력 없을 때만 저장
+    const h = dataHash(data);
+    if (h === lastSavedHash) return; // 변경 없으면 스킵
+    window.fbSetDoc(data)
+      .then(() => { lastSavedHash = h; })
+      .catch(e => {
+        if (e && (e.code === 'resource-exhausted' || /quota|exhausted/i.test(e.message||''))) {
+          firestoreDisabled = true;
+          updateStatusLabel();
+          toast('⚠ 오늘 동기화 한도 초과 — 로컬 저장만 작동 (자정 UTC 리셋)', 'error');
+          try { window.fbTerminate && window.fbTerminate(); } catch(_) {}
+        } else {
+          console.warn('Firestore save error:', e);
+        }
+      });
+  }, 2000);
 }
 
 // ============== Helpers ==============
@@ -1220,6 +1251,8 @@ document.querySelectorAll('.view-tabs button').forEach(b => {
 document.getElementById('modal-bg').addEventListener('click', e => {
   if (e.target.id === 'modal-bg') closeModal();
 });
+// Firestore 도착 전 로컬에서 즉시 복원
+loadFromLocal();
 document.getElementById('updated').textContent = '연결 중... ⏳';
 render();
 
@@ -1228,44 +1261,46 @@ function startFirestore() {
   if (!window.fbOnSnap) return;
   window.fbOnSnap(async (snap) => {
     if (!snap.exists()) {
-      data = JSON.parse(JSON.stringify(SEED));
-      await window.fbSetDoc(data);
-      toast('초기 데이터 생성됨', 'success');
+      if (!loadFromLocal()) data = JSON.parse(JSON.stringify(SEED));
+      try { await window.fbSetDoc(data); lastSavedHash = dataHash(data); } catch(e) {}
       return;
     }
     const isSelfWrite = snap.metadata && snap.metadata.hasPendingWrites;
+    if (isSelfWrite) return; // 자기 echo면 완전 무시
 
-    // 🔥 내가 방금 저장한 echo는 완전히 무시
-    if (isSelfWrite) return;
-
-    data = snap.data();
-    if (!data.lessons || data.lessons.length === 0) {
-      console.warn('Firestore 데이터 비어있음');
-      return;
-    }
-    const u = data.updated ? new Date(data.updated).toLocaleString('ko-KR') : '—';
-    document.getElementById('updated').textContent = '🟢 실시간 · 최종 ' + u;
-    // 본인이 방금 저장한 echo면 UI 갱신 스킵 (드롭다운/달력 보호)
-    if (isSelfWrite) return;
-    // 다른 사용자 변경 — 모달 안 input/select에 포커스 있으면 갱신 스킵
-    const af = document.activeElement;
-    const modalBg = document.getElementById('modal-bg');
-
-    const inModalInput =
-      af &&
-      modalBg &&
-      modalBg.contains(af) &&
-      /^(INPUT|SELECT|TEXTAREA)$/.test(af.tagName);
-
-    // 🔥 입력 중이면 화면 갱신 자체 금지
-    if (inModalInput) {
+    const remote = snap.data();
+    if (!remote.lessons || remote.lessons.length === 0 || remote.version !== SEED.version) {
       _suppressSave = false;
+      if (!loadFromLocal()) data = JSON.parse(JSON.stringify(SEED));
+      saveData();
       return;
     }
-    render();
-    
+    _suppressSave = true;
+    data = remote;
+    lastSavedHash = dataHash(data);
+    saveLocal();
+    _suppressSave = false;
+    updateStatusLabel();
+    // 모달 안 input/select에 포커스 있으면 스킵
+    if (currentLessonId) {
+      const af = document.activeElement;
+      const modalBg = document.getElementById('modal-bg');
+      const inModalInput = af && modalBg && modalBg.contains(af) && /^(INPUT|SELECT|TEXTAREA)$/.test(af.tagName);
+      if (inModalInput) return;
+      openModal(currentLessonId);
+    } else {
+      render();
+    }
+  }, (err) => {
+    // onSnapshot error handler — quota 등 발생 시 graceful 종료
+    console.warn('Firestore listener error:', err && err.code);
+    if (err && (err.code === 'resource-exhausted' || err.code === 'unavailable' || /quota/i.test(err.message||''))) {
+      firestoreDisabled = true;
+      updateStatusLabel();
+      toast('⚠ 실시간 동기화 중단 — 로컬 모드로 전환 (자정 UTC 리셋)', 'error');
+      try { window.fbTerminate && window.fbTerminate(); } catch(_) {}
+    }
   });
-  _suppressSave = false;
 }
 if (window.fbReady) startFirestore();
 else document.addEventListener('fbready', startFirestore);
