@@ -250,6 +250,11 @@ href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/prete
   .issue-mini.medium{border-left-color:#cc7700}
   .issue-mini.low{border-left-color:var(--action-blue)}
   .issue-mini.closed{opacity:0.5}
+  .issue-mini.editing{background:#fff;border:1px solid var(--dark-green);box-shadow:var(--shadow-card);align-items:stretch}
+  .issue-mini.editing input,.issue-mini.editing select{border:1px solid var(--silver-teal);padding:7px 10px;font-size:13px;border-radius:6px;font-family:inherit;background:#fff;width:100%}
+  .issue-mini.editing input:focus,.issue-mini.editing select:focus{outline:none;border-color:var(--dark-green);box-shadow:0 0 0 2px rgba(0,104,74,0.1)}
+  .issue-mini.editing .im-actions{flex-direction:column;justify-content:flex-start}
+  .issue-mini.editing .im-actions button{padding:6px 10px;font-size:14px}
   .im-title{font-weight:500;font-size:14px;color:#000}
   .im-desc{font-size:12px;color:var(--cool-gray);margin-top:4px;font-weight:300}
   .im-meta{font-family:'Source Code Pro',monospace;font-size:10px;color:var(--cool-gray);margin-top:4px;letter-spacing:0.5px}
@@ -1014,18 +1019,39 @@ function openModal(lessonId) {
     </table>
     <div style="font-family:'Source Code Pro',monospace;font-size:10px;letter-spacing:1px;color:var(--cool-gray);margin:6px 0 14px;text-transform:uppercase">▸ 상태를 바꾸면 실제 일정이 자동 기록됩니다 (오늘 날짜)</div>
   `;
-  const issuesHtml = l.issues.map(i => `
-    <div class="issue-mini ${i.priority} ${i.status==='closed'?'closed':''}">
-      <div style="flex:1">
-        <div class="im-title">[${i.priority.toUpperCase()}] ${i.title}</div>
-        ${i.description ? `<div class="im-desc">${i.description}</div>` : ''}
-        <div class="im-meta">생성: ${i.created}${i.resolved ? ' · 해결: '+i.resolved : ''}</div>
-      </div>
-      <div class="im-actions">
-        <button onclick="toggleIssue('${i.id}')" title="${i.status==='open'?'해결':'다시 열기'}">${i.status==='open'?'✓':'↺'}</button>
-        <button onclick="deleteIssue('${i.id}')" title="삭제">🗑</button>
-      </div>
-    </div>`).join('');
+  const issuesHtml = l.issues.map(i => {
+    if (editingIssueId === i.id) {
+      return `
+        <div class="issue-mini ${i.priority} editing">
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+            <input type="text" id="edit-title-${i.id}" value="${(i.title||'').replace(/"/g,'&quot;')}" placeholder="이슈 제목" />
+            <input type="text" id="edit-desc-${i.id}" value="${(i.description||'').replace(/"/g,'&quot;')}" placeholder="설명 (선택)" />
+            <select id="edit-priority-${i.id}">
+              <option value="high"   ${i.priority==='high'?'selected':''}>🔴 High</option>
+              <option value="medium" ${i.priority==='medium'?'selected':''}>🟡 Medium</option>
+              <option value="low"    ${i.priority==='low'?'selected':''}>🔵 Low</option>
+            </select>
+          </div>
+          <div class="im-actions">
+            <button onclick="saveEditIssue('${i.id}')" title="저장">✓</button>
+            <button onclick="cancelEditIssue()" title="취소">✕</button>
+          </div>
+        </div>`;
+    }
+    return `
+      <div class="issue-mini ${i.priority} ${i.status==='closed'?'closed':''}">
+        <div style="flex:1">
+          <div class="im-title">[${i.priority.toUpperCase()}] ${i.title}</div>
+          ${i.description ? `<div class="im-desc">${i.description}</div>` : ''}
+          <div class="im-meta">생성: ${i.created}${i.resolved ? ' · 해결: '+i.resolved : ''}</div>
+        </div>
+        <div class="im-actions">
+          <button onclick="startEditIssue('${i.id}')" title="수정">✏️</button>
+          <button onclick="toggleIssue('${i.id}')" title="${i.status==='open'?'해결':'다시 열기'}">${i.status==='open'?'✓':'↺'}</button>
+          <button onclick="deleteIssue('${i.id}')" title="삭제">🗑</button>
+        </div>
+      </div>`;
+  }).join('');
 
   document.getElementById('modal-content').innerHTML = `
     <div class="modal-id">${l.phase} · ${l.type} · ${l.area}</div>
@@ -1139,6 +1165,33 @@ function addIssue() {
   saveData();
   openModal(currentLessonId);
   toast('이슈 추가됨', 'success');
+}
+let editingIssueId = null;
+function startEditIssue(id) {
+  editingIssueId = id;
+  openModal(currentLessonId);
+}
+function cancelEditIssue() {
+  editingIssueId = null;
+  openModal(currentLessonId);
+}
+function saveEditIssue(id) {
+  const l = data.lessons.find(x => x.id === currentLessonId);
+  const i = l && l.issues.find(x => x.id === id);
+  if (!i) return;
+  const titleEl = document.getElementById('edit-title-' + id);
+  const descEl  = document.getElementById('edit-desc-' + id);
+  const prioEl  = document.getElementById('edit-priority-' + id);
+  if (!titleEl) return;
+  const title = titleEl.value.trim();
+  if (!title) { toast('제목을 입력하세요', 'error'); return; }
+  i.title = title;
+  i.description = descEl ? descEl.value.trim() : '';
+  if (prioEl) i.priority = prioEl.value;
+  editingIssueId = null;
+  saveData();
+  openModal(currentLessonId);
+  toast('이슈 수정됨', 'success');
 }
 function toggleIssue(id) {
   const l = data.lessons.find(x => x.id === currentLessonId);
