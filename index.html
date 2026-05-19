@@ -171,7 +171,11 @@ href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/prete
   .gantt-label.p2 .gantt-id{color:var(--action-blue)}
   .gantt-issue{font-size:9px;background:#fdedeb;color:#cd2c2c;padding:1px 6px;border-radius:8px;margin-left:auto;font-family:'Source Code Pro',monospace;font-weight:600;letter-spacing:0.5px;white-space:nowrap}
   .gantt-track{position:relative;height:100%;flex:1}
-  .gantt-stage-plan{position:absolute;top:8px;height:22px;border:1.5px solid;border-radius:5px;opacity:0.85;box-sizing:border-box;z-index:1}
+  .gantt-stage-plan{position:absolute;top:8px;height:22px;border:1.5px solid;border-radius:5px;opacity:0.85;box-sizing:border-box;z-index:1;cursor:grab;transition:opacity 0.12s}
+  .gantt-stage-plan:hover{opacity:1;box-shadow:0 2px 6px rgba(0,0,0,0.15)}
+  .gantt-stage-plan.dragging{opacity:0.5;cursor:grabbing;z-index:20;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+  .gantt-stage-plan::before{content:'';position:absolute;left:0;top:0;width:8px;height:100%;cursor:ew-resize}
+  .gantt-stage-plan::after{content:'';position:absolute;right:0;top:0;width:8px;height:100%;cursor:ew-resize}
   .gantt-stage-bar{position:absolute;top:12px;height:14px;border-radius:4px;z-index:3;box-shadow:0 1px 2px rgba(0,0,0,0.18)}
   .gantt-stage-bar.done{}
   .gantt-stage-bar.done.late{outline:1.5px solid #cd2c2c;outline-offset:1px}
@@ -1183,7 +1187,7 @@ function renderGantt() {
       const planX = dateToX(sd.start);
       const planEndX = dateToX(sd.end);
       const planW = Math.max(DAY_PX, planEndX - planX + DAY_PX);
-      const planBar = `<div class="gantt-stage-plan" style="left:${planX}px;width:${planW}px;background:${stg.light};border-color:${stg.color}" title="${stg.label} 계획: ${sd.start} ~ ${sd.end}"></div>`;
+      const planBar = `<div class="gantt-stage-plan" data-lesson-id="${l.id}" data-stage-key="${stg.key}" data-start="${sd.start}" data-end="${sd.end}" style="left:${planX}px;width:${planW}px;background:${stg.light};border-color:${stg.color}" title="${stg.label} 계획: ${sd.start} ~ ${sd.end} · 드래그로 이동 · 우측끝 ↔ 으로 기간 조정"></div>`;
       let actBar = '';
       if (sd.status === 'done' && sd.actualStart) {
         const ax = dateToX(sd.actualStart);
@@ -1686,6 +1690,108 @@ function toast(msg, cls) {
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 1800);
 }
+
+// === 간트 차트 드래그 (이동) + 리사이즈 (기간 조정) ===
+let _ganttDrag = null;
+function _addDays(dateStr, days) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0,10);
+}
+function _applyStageRange(lesson, stageKey, newStart, newEnd) {
+  if (stageKey === 'design') {
+    ['ui','art'].forEach(k => {
+      if (newStart !== null) lesson.stages[k].start = newStart;
+      if (newEnd !== null)   lesson.stages[k].end = newEnd;
+    });
+  } else {
+    if (newStart !== null) lesson.stages[stageKey].start = newStart;
+    if (newEnd !== null)   lesson.stages[stageKey].end = newEnd;
+  }
+}
+document.addEventListener('mousedown', (e) => {
+  const bar = e.target.closest('.gantt-stage-plan');
+  if (!bar) return;
+  const lessonId = bar.dataset.lessonId;
+  const stageKey = bar.dataset.stageKey;
+  if (!lessonId || !stageKey) return;
+  const rect = bar.getBoundingClientRect();
+  const fromRight = rect.right - e.clientX;
+  const fromLeft = e.clientX - rect.left;
+  const mode = fromRight <= 8 ? 'resize-end' : (fromLeft <= 8 ? 'resize-start' : 'move');
+  e.preventDefault();
+  e.stopPropagation();
+  _ganttDrag = {
+    lessonId, stageKey, mode,
+    origStart: bar.dataset.start, origEnd: bar.dataset.end,
+    startX: e.clientX,
+    bar,
+    DAY_PX: 7,
+    moved: false
+  };
+  bar.classList.add('dragging');
+  document.body.style.cursor = (mode === 'move' ? 'grabbing' : 'ew-resize');
+  document.body.style.userSelect = 'none';
+});
+document.addEventListener('mousemove', (e) => {
+  if (!_ganttDrag) return;
+  const dx = e.clientX - _ganttDrag.startX;
+  if (Math.abs(dx) >= 3) _ganttDrag.moved = true;
+  const snap = Math.round(dx / _ganttDrag.DAY_PX) * _ganttDrag.DAY_PX;
+  if (_ganttDrag.mode === 'move') {
+    _ganttDrag.bar.style.transform = `translateX(${snap}px)`;
+  } else if (_ganttDrag.mode === 'resize-end') {
+    if (!_ganttDrag.origW) _ganttDrag.origW = parseInt(_ganttDrag.bar.style.width);
+    const nw = Math.max(_ganttDrag.DAY_PX, _ganttDrag.origW + snap);
+    _ganttDrag.bar.style.width = nw + 'px';
+  } else if (_ganttDrag.mode === 'resize-start') {
+    if (!_ganttDrag.origW) _ganttDrag.origW = parseInt(_ganttDrag.bar.style.width);
+    if (!_ganttDrag.origLeft) _ganttDrag.origLeft = parseInt(_ganttDrag.bar.style.left);
+    const nw = Math.max(_ganttDrag.DAY_PX, _ganttDrag.origW - snap);
+    _ganttDrag.bar.style.left = (_ganttDrag.origLeft + snap) + 'px';
+    _ganttDrag.bar.style.width = nw + 'px';
+  }
+});
+document.addEventListener('mouseup', (e) => {
+  if (!_ganttDrag) return;
+  const dx = e.clientX - _ganttDrag.startX;
+  const dayDiff = Math.round(dx / _ganttDrag.DAY_PX);
+  const bar = _ganttDrag.bar;
+  const g = _ganttDrag;
+  _ganttDrag = null;
+  bar.classList.remove('dragging');
+  document.body.style.cursor = '';
+  document.body.style.userSelect = '';
+  // 클릭만 한 경우 → 모달 열기
+  if (!g.moved || dayDiff === 0) {
+    bar.style.transform = '';
+    openModal(g.lessonId);
+    return;
+  }
+  const lesson = data.lessons.find(l => l.id === g.lessonId);
+  if (!lesson) { render(); return; }
+  const stgLabelMap = {plan:'기획',design:'디자인',dev:'개발',video:'영상',qa:'검수'};
+  const stgLabel = stgLabelMap[g.stageKey] || g.stageKey;
+  if (g.mode === 'move') {
+    const newStart = _addDays(g.origStart, dayDiff);
+    const newEnd = _addDays(g.origEnd, dayDiff);
+    _applyStageRange(lesson, g.stageKey, newStart, newEnd);
+    toast(`${g.lessonId} ${stgLabel} ${dayDiff>0?'+':''}${dayDiff}일 이동`, 'success');
+  } else if (g.mode === 'resize-end') {
+    const newEnd = _addDays(g.origEnd, dayDiff);
+    if (newEnd < g.origStart) { render(); return; }
+    _applyStageRange(lesson, g.stageKey, null, newEnd);
+    toast(`${g.lessonId} ${stgLabel} 종료 ${dayDiff>0?'+':''}${dayDiff}일`, 'success');
+  } else if (g.mode === 'resize-start') {
+    const newStart = _addDays(g.origStart, dayDiff);
+    if (newStart > g.origEnd) { render(); return; }
+    _applyStageRange(lesson, g.stageKey, newStart, null);
+    toast(`${g.lessonId} ${stgLabel} 시작 ${dayDiff>0?'+':''}${dayDiff}일`, 'success');
+  }
+  saveData();
+  render();
+});
 
 document.querySelectorAll('.view-tabs button').forEach(b => {
   b.addEventListener('click', () => {
