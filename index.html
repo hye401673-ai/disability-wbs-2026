@@ -1,0 +1,1065 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>2026 장애유형별 평생교육 디지털 콘텐츠 · WBS</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/[email protected]/dist/web/variable/pretendardvariable.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600&family=Noto+Serif+KR:wght@500;700;900&display=swap" rel="stylesheet">
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyAGiSO8JM8waJQz7NeyFBdRoTUfACx8aCM",
+    authDomain: "disability-wbs-2026.firebaseapp.com",
+    projectId: "disability-wbs-2026",
+    storageBucket: "disability-wbs-2026.firebasestorage.app",
+    messagingSenderId: "109567858253",
+    appId: "1:109567858253:web:e0bcb8b7da0726adf22e04",
+    measurementId: "G-SNJ4SFJV1Q"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const docRef = doc(db, 'wbs', 'main');
+  window.fbSetDoc = (d) => setDoc(docRef, d);
+  window.fbOnSnap = (cb) => onSnapshot(docRef, cb);
+  window.fbReady = true;
+  document.dispatchEvent(new Event('fbready'));
+</script>
+<style>
+  :root{
+    --forest:#001e2b;
+    --mg-green:#00ed64;
+    --dark-green:#00684a;
+    --action-blue:#006cfa;
+    --hover-blue:#3860be;
+    --teal-active:#1eaedb;
+    --deep-teal:#1c2d38;
+    --teal-gray:#3d4f58;
+    --cool-gray:#5c6c75;
+    --silver-teal:#b8c4c2;
+    --light-input:#e8edeb;
+    --bg-light:#f9fbfb;
+    --shadow-forest:rgba(0,30,43,0.12) 0px 26px 44px, rgba(0,0,0,0.13) 0px 7px 13px;
+    --shadow-card:rgba(0,30,43,0.08) 0px 4px 16px, rgba(0,0,0,0.06) 0px 1px 3px;
+    --shadow-subtle:rgba(0,0,0,0.06) 0px 2px 6px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg-light);color:#000;font-family:'Pretendard Variable','Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:300;line-height:1.5;font-size:15px;-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+  a{color:var(--action-blue);text-decoration:none}
+  a:hover{color:var(--hover-blue)}
+
+  /* ===== HEADER (FOREST) ===== */
+  header.hero{background:var(--forest);color:#fff;padding:32px 40px 28px;position:relative;overflow:hidden}
+  header.hero::before{content:'';position:absolute;top:-200px;right:-100px;width:600px;height:600px;background:radial-gradient(circle,rgba(0,237,100,0.12) 0%,transparent 60%);pointer-events:none}
+  .hero-inner{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px;max-width:1600px;margin:0 auto;position:relative;z-index:1}
+  .hero-title-block .code-label{font-family:'Source Code Pro',monospace;font-size:12px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--mg-green);margin-bottom:8px;display:block}
+  .hero-title{font-family:'Noto Serif KR',serif;font-weight:700;font-size:38px;line-height:1.2;letter-spacing:-0.02em;color:#fff}
+  .hero-title em{font-style:normal;color:var(--mg-green);border-bottom:2px solid var(--mg-green);padding-bottom:2px}
+  .hero-sub{font-size:14px;color:var(--light-input);font-weight:300;margin-top:8px}
+  .hero-toolbar{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{border-radius:100px;padding:10px 20px;font-size:13px;font-weight:500;letter-spacing:0.5px;transition:all 0.2s;cursor:pointer;border:1px solid transparent;display:inline-flex;align-items:center;gap:6px}
+  .btn-primary{background:var(--mg-green);color:#000;border-color:var(--mg-green)}
+  .btn-primary:hover{background:#33ee75;transform:translateY(-1px)}
+  .btn-ghost{background:transparent;color:#fff;border-color:var(--teal-gray)}
+  .btn-ghost:hover{background:var(--deep-teal);border-color:var(--silver-teal)}
+  .btn-outline{background:#fff;color:var(--forest);border-color:var(--silver-teal)}
+  .btn-outline:hover{background:var(--bg-light)}
+
+  /* ===== MILESTONES (DARK STRIP) ===== */
+  .milestones{background:var(--deep-teal);padding:24px 40px;border-top:1px solid var(--teal-gray)}
+  .milestones-inner{max-width:1600px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media (max-width:880px){.milestones-inner{grid-template-columns:1fr 1fr}}
+  .ms-card{background:var(--forest);border:1px solid var(--teal-gray);border-radius:16px;padding:18px 20px;position:relative}
+  .ms-card::before{content:'';position:absolute;left:20px;right:20px;top:18px;height:2px;background:var(--mg-green);opacity:0.8}
+  .ms-flag{font-family:'Source Code Pro',monospace;font-size:11px;font-weight:600;letter-spacing:2px;color:var(--mg-green);text-transform:uppercase;margin-top:8px}
+  .ms-name{font-size:16px;font-weight:500;color:#fff;margin:6px 0}
+  .ms-date{font-size:12px;color:var(--silver-teal);font-weight:300}
+
+  /* ===== SUMMARY STATS ===== */
+  .summary{background:#fff;border-bottom:1px solid var(--silver-teal);padding:24px 40px}
+  .summary-inner{max-width:1600px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:24px}
+  @media (max-width:680px){.summary-inner{grid-template-columns:repeat(2,1fr)}}
+  .stat{text-align:center;padding:8px}
+  .stat-label{font-family:'Source Code Pro',monospace;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--cool-gray);margin-bottom:6px}
+  .stat-val{font-family:'Noto Serif KR',serif;font-weight:700;font-size:36px;line-height:1;color:var(--forest)}
+  .stat-val.green{color:var(--dark-green)}
+  .stat-val.blue{color:var(--action-blue)}
+  .stat-val.red{color:#cd2c2c}
+  .stat-val.amber{color:#cc7700}
+
+  /* ===== FILTER BAR ===== */
+  .filterbar{background:#fff;padding:16px 40px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--silver-teal);position:sticky;top:0;z-index:50}
+  .filterbar-inner{max-width:1600px;margin:0 auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap;width:100%}
+  .view-tabs{display:flex;gap:0;background:var(--bg-light);border-radius:100px;padding:4px;border:1px solid var(--silver-teal)}
+  .view-tabs button{border-radius:100px;padding:7px 16px;font-size:13px;font-weight:500;color:var(--cool-gray);transition:all 0.15s}
+  .view-tabs button.active{background:var(--forest);color:#fff}
+  .filterbar select,.filterbar input{border:1px solid var(--silver-teal);padding:8px 12px;font-size:13px;border-radius:8px;font-family:inherit;background:#fff;color:#000}
+  .filterbar input[type=search]{min-width:220px}
+  .filterbar select:focus,.filterbar input:focus{outline:none;border-color:var(--dark-green);box-shadow:0 0 0 3px rgba(0,104,74,0.1)}
+  .filter-count{margin-left:auto;font-family:'Source Code Pro',monospace;font-size:11px;font-weight:600;color:var(--cool-gray);letter-spacing:1px}
+
+  /* ===== MAIN ===== */
+  main{padding:24px 40px 60px;max-width:1600px;margin:0 auto}
+
+  /* ===== DASHBOARD CARDS ===== */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  .lesson-card{background:#fff;border:1px solid var(--silver-teal);border-radius:16px;padding:18px 20px;cursor:pointer;transition:all 0.2s;position:relative;box-shadow:var(--shadow-subtle)}
+  .lesson-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-card);border-color:var(--dark-green)}
+  .lesson-card .lc-phase{position:absolute;top:18px;right:18px;font-family:'Source Code Pro',monospace;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--cool-gray);background:var(--bg-light);padding:3px 10px;border-radius:100px;border:1px solid var(--silver-teal)}
+  .lesson-card .lc-phase.p1{background:rgba(0,237,100,0.1);color:var(--dark-green);border-color:var(--mg-green)}
+  .lesson-card .lc-phase.p2{background:rgba(0,108,250,0.08);color:var(--action-blue);border-color:rgba(0,108,250,0.3)}
+  .lesson-card .lc-id{font-family:'Source Code Pro',monospace;font-size:11px;font-weight:600;letter-spacing:1.5px;color:var(--dark-green);text-transform:uppercase;margin-bottom:6px}
+  .lesson-card .lc-name{font-size:16px;font-weight:500;line-height:1.35;color:#000;margin-bottom:4px;padding-right:90px;min-height:42px}
+  .lesson-card .lc-meta{font-size:13px;color:var(--cool-gray);font-weight:300}
+  .lesson-card .lc-stages{display:flex;gap:3px;margin:14px 0 6px}
+  .lc-stage{flex:1;height:6px;border-radius:100px;background:var(--silver-teal)}
+  .lc-stage.todo{background:var(--silver-teal)}
+  .lc-stage.in-progress{background:var(--mg-green)}
+  .lc-stage.done{background:var(--dark-green)}
+  .lc-stage-labels{display:flex;gap:3px;font-family:'Source Code Pro',monospace;font-size:9px;letter-spacing:0.5px;color:var(--cool-gray);text-align:center;text-transform:uppercase;font-weight:500}
+  .lc-stage-labels span{flex:1}
+  .lc-footer{display:flex;gap:8px;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--bg-light);font-size:12px;color:var(--cool-gray)}
+  .badge-issue{background:#fdedeb;color:#cd2c2c;padding:3px 10px;border-radius:100px;font-weight:600;font-size:11px;font-family:'Source Code Pro',monospace;letter-spacing:0.5px}
+  .badge-issue.ok{background:rgba(0,237,100,0.15);color:var(--dark-green)}
+  .badge-video{background:var(--bg-light);color:var(--cool-gray);padding:3px 10px;border-radius:100px;font-size:11px;font-family:'Source Code Pro',monospace;letter-spacing:0.5px;font-weight:500}
+
+  /* ===== TABLE ===== */
+  table.wbs{width:100%;border-collapse:separate;border-spacing:0;background:#fff;font-size:13px;border:1px solid var(--silver-teal);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-subtle)}
+  table.wbs thead th{background:var(--forest);color:#fff;padding:14px;text-align:left;font-family:'Source Code Pro',monospace;font-weight:500;font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
+  table.wbs tbody td{padding:12px 14px;border-bottom:1px solid var(--bg-light);vertical-align:middle;font-weight:300}
+  table.wbs tbody tr{transition:background 0.15s}
+  table.wbs tbody tr:hover{background:var(--bg-light);cursor:pointer}
+  table.wbs .stage-mini{display:inline-flex;gap:3px;align-items:center}
+  table.wbs .stage-mini span{width:18px;height:6px;border-radius:100px;background:var(--silver-teal)}
+  table.wbs .stage-mini span.in-progress{background:var(--mg-green)}
+  table.wbs .stage-mini span.done{background:var(--dark-green)}
+  table.wbs strong{font-family:'Source Code Pro',monospace;font-size:12px;color:var(--dark-green);letter-spacing:1px}
+
+  /* ===== KANBAN ===== */
+  .kanban{display:flex;gap:14px;overflow-x:auto;padding:4px 0 16px;min-height:600px}
+  .kanban-col{background:var(--bg-light);border:1px solid var(--silver-teal);border-radius:16px;padding:14px;min-width:280px;flex:1;display:flex;flex-direction:column}
+  .kanban-col.drag-over{background:rgba(0,237,100,0.06);border-color:var(--mg-green)}
+  .kanban-col h3{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:'Source Code Pro',monospace;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--forest)}
+  .kanban-col h3 .count{background:var(--forest);color:var(--mg-green);padding:2px 10px;border-radius:100px;font-size:11px;letter-spacing:0.5px}
+  .kanban-col .lesson-card{margin-bottom:10px;padding:12px 14px;cursor:grab;user-select:none}
+  .kanban-col .lesson-card:active{cursor:grabbing}
+  .kanban-col .lesson-card.dragging{opacity:0.5;cursor:grabbing}
+  .kanban-col .lesson-card .lc-name{font-size:13px;min-height:auto;padding-right:0;margin-top:4px}
+  .kanban-col .lesson-card .lc-meta{font-size:11px}
+  .kanban-col .lesson-card .lc-phase{display:none}
+  .kanban-empty{padding:30px;text-align:center;color:var(--cool-gray);font-size:12px;font-family:'Source Code Pro',monospace;letter-spacing:1px;text-transform:uppercase;border:2px dashed var(--silver-teal);border-radius:8px}
+
+  /* ===== ISSUES ===== */
+  .issue-list{display:flex;flex-direction:column;gap:10px}
+  .issue-item{background:#fff;border:1px solid var(--silver-teal);border-left:4px solid var(--cool-gray);border-radius:12px;padding:16px 20px;cursor:pointer;transition:all 0.15s;box-shadow:var(--shadow-subtle)}
+  .issue-item:hover{background:var(--bg-light);transform:translateX(2px)}
+  .issue-item.high{border-left-color:#cd2c2c}
+  .issue-item.medium{border-left-color:#cc7700}
+  .issue-item.low{border-left-color:var(--action-blue)}
+  .issue-item.closed{opacity:0.5}
+  .issue-item.closed .ii-title{text-decoration:line-through}
+  .ii-head{display:flex;gap:10px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+  .ii-lesson{background:var(--forest);color:#fff;padding:3px 10px;border-radius:100px;font-family:'Source Code Pro',monospace;font-size:10px;letter-spacing:1px;font-weight:500}
+  .ii-prio{padding:2px 10px;border-radius:100px;font-family:'Source Code Pro',monospace;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase}
+  .ii-prio.high{background:#fdedeb;color:#cd2c2c}
+  .ii-prio.medium{background:#fff3e0;color:#cc7700}
+  .ii-prio.low{background:rgba(0,108,250,0.08);color:var(--action-blue)}
+  .ii-status{font-family:'Source Code Pro',monospace;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--cool-gray)}
+  .ii-status.open{color:#cd2c2c}
+  .ii-title{font-size:16px;font-weight:500;color:#000}
+  .ii-desc{font-size:13px;color:var(--cool-gray);margin-top:6px;font-weight:300}
+  .ii-meta{font-size:11px;color:var(--cool-gray);margin-top:6px;font-family:'Source Code Pro',monospace;letter-spacing:0.3px}
+
+  /* ===== MODAL ===== */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,30,43,0.6);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:40px 20px;overflow-y:auto;backdrop-filter:blur(4px)}
+  .modal-bg.active{display:flex}
+  .modal{background:#fff;border-radius:24px;max-width:920px;width:100%;padding:32px 36px;margin:auto;position:relative;box-shadow:var(--shadow-forest)}
+  .modal-close{position:absolute;top:20px;right:24px;background:transparent;border:none;font-size:28px;color:var(--cool-gray);cursor:pointer;width:40px;height:40px;border-radius:100px;display:flex;align-items:center;justify-content:center;transition:background 0.15s}
+  .modal-close:hover{background:var(--bg-light)}
+  .modal-id{font-family:'Source Code Pro',monospace;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--dark-green);text-transform:uppercase;margin-bottom:6px}
+  .modal h2{font-family:'Noto Serif KR',serif;font-weight:700;font-size:28px;line-height:1.25;margin-bottom:6px;color:var(--forest)}
+  .modal .modal-sub{color:var(--cool-gray);font-size:14px;margin-bottom:20px;font-weight:300}
+  .info-row{display:flex;gap:10px;margin-bottom:8px;font-size:14px;align-items:center}
+  .info-row label{font-family:'Source Code Pro',monospace;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;width:90px;color:var(--cool-gray);flex-shrink:0}
+  .info-row input,.info-row select{border:1px solid var(--silver-teal);padding:7px 12px;font-size:13px;border-radius:8px;flex:1;font-family:inherit;background:#fff}
+  .info-row input:focus,.info-row select:focus{outline:none;border-color:var(--dark-green);box-shadow:0 0 0 3px rgba(0,104,74,0.1)}
+  .stages-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:18px 0}
+  @media (max-width:680px){.stages-grid{grid-template-columns:1fr}}
+  .stage-card{border:1px solid var(--silver-teal);border-radius:12px;padding:14px 16px;background:var(--bg-light)}
+  .sc-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+  .sc-name{font-family:'Source Code Pro',monospace;font-weight:600;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--forest)}
+  .sc-row{display:flex;gap:8px;align-items:center;margin-top:6px;font-size:12px}
+  .sc-row label{font-family:'Source Code Pro',monospace;font-weight:500;width:50px;color:var(--cool-gray);font-size:10px;letter-spacing:1px;text-transform:uppercase}
+  .sc-row input,.sc-row select,.sc-row textarea{border:1px solid var(--silver-teal);padding:5px 10px;font-size:12px;font-family:inherit;border-radius:6px;flex:1;background:#fff}
+  .sc-row textarea{min-height:42px;resize:vertical;font-weight:300}
+  .status-badge{padding:3px 12px;border-radius:100px;font-family:'Source Code Pro',monospace;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase}
+  .status-badge.todo{background:var(--bg-light);color:var(--cool-gray);border:1px solid var(--silver-teal)}
+  .status-badge.in-progress{background:rgba(0,237,100,0.15);color:var(--dark-green)}
+  .status-badge.done{background:var(--forest);color:var(--mg-green)}
+
+  /* ===== STAGES TABLE (in modal) ===== */
+  .stages-table{width:100%;margin:14px 0 8px;border-collapse:separate;border-spacing:0;font-size:12px;background:#fff;border:1px solid var(--silver-teal);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-subtle)}
+  .stages-table thead th{background:var(--deep-teal);color:var(--mg-green);padding:10px 12px;text-align:left;font-family:'Source Code Pro',monospace;font-weight:500;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap}
+  .stages-table tbody td{padding:8px 10px;border-bottom:1px solid var(--bg-light);vertical-align:middle}
+  .stages-table tbody tr:last-child td{border-bottom:none}
+  .stages-table tbody tr:nth-child(even){background:var(--bg-light)}
+  .stages-table .st-name{font-family:'Source Code Pro',monospace;font-weight:600;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest);white-space:nowrap}
+  .stages-table input,.stages-table select{border:1px solid var(--silver-teal);padding:5px 8px;font-size:12px;border-radius:6px;font-family:inherit;background:#fff;width:100%}
+  .stages-table input:focus,.stages-table select:focus{outline:none;border-color:var(--dark-green);box-shadow:0 0 0 2px rgba(0,104,74,0.1)}
+  .stages-table input[type=date]{min-width:120px}
+  .dt-pair{display:flex;flex-direction:column;gap:4px}
+  .dt-pair input{font-size:11px;padding:4px 8px}
+  .dt-pair .dt-label{font-family:'Source Code Pro',monospace;font-size:9px;letter-spacing:1px;color:var(--cool-gray);text-transform:uppercase;margin-bottom:2px}
+
+  /* ===== SCHEDULE BADGE ===== */
+  .sched-badge{padding:3px 10px;border-radius:100px;font-family:'Source Code Pro',monospace;font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;display:inline-block;white-space:nowrap}
+  .sched-badge.on-track{background:rgba(0,237,100,0.15);color:var(--dark-green)}
+  .sched-badge.delayed{background:#fdedeb;color:#cd2c2c}
+  .sched-badge.done-on-time{background:var(--forest);color:var(--mg-green)}
+  .sched-badge.done-late{background:#fff3e0;color:#cc7700}
+  .sched-badge.done-early{background:rgba(0,108,250,0.1);color:var(--action-blue)}
+  .sched-badge.not-started{background:var(--bg-light);color:var(--cool-gray);border:1px solid var(--silver-teal)}
+  .sched-badge.done{background:var(--forest);color:var(--mg-green)}
+  .sched-badge.no-plan{background:var(--bg-light);color:var(--cool-gray)}
+  .lesson-card .lc-sched{position:absolute;top:46px;right:18px}
+
+  .issue-section{margin-top:24px;border-top:1px solid var(--silver-teal);padding-top:18px}
+  .issue-section h3{font-family:'Source Code Pro',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;color:var(--forest);margin-bottom:12px}
+  .issue-mini{background:var(--bg-light);border:1px solid var(--silver-teal);border-left:4px solid var(--cool-gray);border-radius:8px;padding:10px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .issue-mini.high{border-left-color:#cd2c2c}
+  .issue-mini.medium{border-left-color:#cc7700}
+  .issue-mini.low{border-left-color:var(--action-blue)}
+  .issue-mini.closed{opacity:0.5}
+  .im-title{font-weight:500;font-size:14px;color:#000}
+  .im-desc{font-size:12px;color:var(--cool-gray);margin-top:4px;font-weight:300}
+  .im-meta{font-family:'Source Code Pro',monospace;font-size:10px;color:var(--cool-gray);margin-top:4px;letter-spacing:0.5px}
+  .im-actions{display:flex;gap:4px;flex-shrink:0}
+  .im-actions button{padding:4px 8px;border-radius:6px;font-size:14px;background:transparent;border:1px solid transparent}
+  .im-actions button:hover{background:#fff;border-color:var(--silver-teal)}
+
+  .issue-add{background:var(--bg-light);border:2px dashed var(--silver-teal);border-radius:12px;padding:14px;margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .issue-add input{flex:1;min-width:180px;border:1px solid var(--silver-teal);padding:8px 12px;font-size:13px;border-radius:8px;font-family:inherit;background:#fff}
+  .issue-add input:focus{outline:none;border-color:var(--dark-green)}
+  .issue-add select{border:1px solid var(--silver-teal);padding:8px 12px;font-size:13px;border-radius:8px;background:#fff;font-family:inherit}
+  .issue-add button{background:var(--forest);color:var(--mg-green);border:none;padding:9px 18px;font-size:12px;font-weight:600;border-radius:100px;font-family:'Source Code Pro',monospace;letter-spacing:1px;text-transform:uppercase}
+  .issue-add button:hover{background:var(--deep-teal)}
+
+  /* ===== TOAST ===== */
+  .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--forest);color:var(--mg-green);padding:14px 28px;border-radius:100px;z-index:200;font-family:'Source Code Pro',monospace;font-size:13px;font-weight:500;letter-spacing:1px;text-transform:uppercase;box-shadow:var(--shadow-forest);animation:slideUp 0.3s;border:1px solid var(--mg-green)}
+  .toast.success{background:var(--dark-green);color:#fff;border-color:var(--mg-green)}
+  .toast.error{background:#cd2c2c;color:#fff;border-color:#fdedeb}
+  @keyframes slideUp{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}
+
+  /* ===== FOOTER ===== */
+  footer{margin-top:40px;padding:32px 40px;background:var(--forest);color:var(--silver-teal);font-size:12px;text-align:center;font-weight:300}
+  footer code{font-family:'Source Code Pro',monospace;color:var(--mg-green);background:var(--deep-teal);padding:2px 8px;border-radius:4px}
+  footer a{color:var(--mg-green)}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-title-block">
+      <span class="code-label">National Institute of Special Education · 2026</span>
+      <h1 class="hero-title">장애유형별 평생교육<br>디지털 콘텐츠 · <em>WBS Tracker</em></h1>
+      <div class="hero-sub">60차시 · 작성: 최문선 팀장 · <span id="updated"></span></div>
+    </div>
+    <div class="hero-toolbar">
+      <button class="btn btn-primary" onclick="exportJSON()">📥 JSON 저장</button>
+      <button class="btn btn-ghost" onclick="exportCSV()">📊 CSV 저장</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()">📤 불러오기</button>
+      <input type="file" id="import-file" accept=".json" onchange="importJSON(this.files[0])" style="display:none" />
+      <button class="btn btn-ghost" onclick="resetData()">🔄 초기화</button>
+    </div>
+  </div>
+</header>
+
+<!-- 마일스톤 -->
+<div class="milestones"><div class="milestones-inner" id="milestones"></div></div>
+
+<!-- 요약 통계 -->
+<div class="summary"><div class="summary-inner" id="summary-row"></div></div>
+
+<!-- 필터바 -->
+<div class="filterbar">
+  <div class="filterbar-inner">
+    <div class="view-tabs">
+      <button class="active" data-view="dashboard">대시보드</button>
+      <button data-view="table">테이블</button>
+      <button data-view="kanban">칸반</button>
+      <button data-view="issues">이슈</button>
+    </div>
+    <select id="filter-phase">
+      <option value="">전체 Phase</option>
+      <option>Phase 1</option><option>Phase 2</option><option>Phase 3</option>
+    </select>
+    <select id="filter-type">
+      <option value="">전체 유형</option>
+      <option>시각</option><option>청각</option><option>뇌병변</option>
+    </select>
+    <select id="filter-issue">
+      <option value="">이슈 전체</option>
+      <option value="open">미해결 이슈</option>
+      <option value="none">이슈 없음</option>
+    </select>
+    <input type="search" id="filter-search" placeholder="차시 검색...">
+    <div class="filter-count" id="count">—</div>
+  </div>
+</div>
+
+<main id="main"></main>
+
+<footer>
+  <div>2026 장애유형별 평생교육 디지털 콘텐츠 개발 · <strong>WBS Tracker</strong> · 집쇼코리아</div>
+  <div style="margin-top:8px">데이터는 <code>Firestore</code> 실시간 동기화 · 누가 편집하면 모든 화면에 0.5초 내 반영 · <code>JSON 저장</code>으로 백업</div>
+</footer>
+
+<!-- 차시 상세 모달 -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+// ============== 시드 데이터 ==============
+const SEED = {
+  version: 3,
+  updated: '2026-05-19',
+  milestones: [
+    { id:'M1', name:'프로토타입 시연 (1박2일)', date:'2026-07-10 ~ 07-11', flag:'7월 초', notes:'9차시 알파 시연·발주처·전문가 9인 피드백' },
+    { id:'M2', name:'현장 적합성 검토', date:'2026-08-03 ~ 08-14', flag:'8월 초', notes:'9차시로 장애 학습자 현장 테스트' },
+    { id:'M3', name:'최종 검수', date:'2026-11-24 ~ 11-30', flag:'11월 말', notes:'60차시 통합 검토회' },
+    { id:'M4', name:'납품 / 설명회', date:'2026-12-04', flag:'12월 초', notes:'최종 납품 + 설명회' },
+  ],
+  lessons: []
+};
+
+const lessonDefs = [
+  ['시각 1-1','점자로 만나는 나의 이름','시각','디지털','최시은'],
+  ['시각 1-2','AI가 읽어주는 나의 물건 이야기','시각','디지털','최시은'],
+  ['시각 1-3','AI 기반 시각 정보 읽기','시각','디지털','최시은'],
+  ['시각 2-1','혼동되는 맞춤법 바르게 사용하기','시각','한글','권성진'],
+  ['시각 2-2','복합어로 새로운 단어 만들기','시각','한글','권성진'],
+  ['시각 2-3','문장 부호 제대로 사용하기','시각','한글','권성진'],
+  ['시각 2-4','문장 성분과 문장의 호응 관계 알기','시각','한글','권성진'],
+  ['시각 2-5','공익광고 만들기','시각','한글','권성진'],
+  ['시각 2-6','상업광고에서 허위과장 표현 찾기','시각','한글','권성진'],
+  ['시각 2-7','안내문 쓰기','시각','한글','권성진'],
+  ['시각 2-8','제안하는 글쓰기','시각','한글','권성진'],
+  ['시각 3-1','일기예보를 듣고 생활에 적용하기','시각','생활','송지숙'],
+  ['시각 3-2','저염 식습관 실천하기','시각','생활','송지숙'],
+  ['시각 3-3','생활 속 안전! 우리 집부터 시작','시각','생활','송지숙'],
+  ['시각 3-4','가계부로 쓰는 하루 일기','시각','생활','송지숙'],
+  ['시각 3-5','알뜰살뜰 계획적인 소비생활','시각','생활','송지숙'],
+  ['시각 3-6','디지털 소비 생활','시각','생활','송지숙'],
+  ['시각 3-7','디지털 금융사기 예방','시각','생활','송지숙'],
+  ['시각 3-8','디지털 문화생활','시각','생활','송지숙'],
+  ['시각 3-9','서로를 배려하는 디지털 대화','시각','생활','송지숙'],
+  ['청각 1-1','생성형 AI로 배우는 디지털 기초','청각','디지털','소성현'],
+  ['청각 1-2','스마트폰으로 정보 찾기','청각','디지털','소성현'],
+  ['청각 1-3','카카오톡·메시지로 소통하기','청각','디지털','소성현'],
+  ['청각 1-4','AI 도구로 표현하기','청각','디지털','소성현'],
+  ['청각 1-5','온라인 쇼핑·키오스크 이용하기','청각','디지털','소성현'],
+  ['청각 1-6','생성형 AI와 함께 창작하기','청각','디지털','소성현'],
+  ['청각 2-1','단어의 뜻 알기','청각','한글','정명기'],
+  ['청각 2-2','웹툰으로 즐기는 한글','청각','한글','정명기'],
+  ['청각 2-3','주어와 서술어가 있는 문장','청각','한글','정명기'],
+  ['청각 2-4','주어·서술어·목적어로 표현하기','청각','한글','정명기'],
+  ['청각 2-5','이어주는 말 활용하기','청각','한글','정명기'],
+  ['청각 2-6','생활 속 안내문 읽기','청각','한글','정명기'],
+  ['청각 2-7','짧은 글 쓰기 연습','청각','한글','정명기'],
+  ['청각 3-1','블로그로 이야기 나누기','청각','생활','안소연'],
+  ['청각 3-2','여행 엽서 쓰기','청각','생활','안소연'],
+  ['청각 3-3','포스터 읽고 만들기','청각','생활','안소연'],
+  ['청각 3-4','댓글과 반응 표현하기','청각','생활','안소연'],
+  ['청각 3-5','영화·영상 감상하고 이야기하기','청각','생활','안소연'],
+  ['청각 3-6','직업 체험과 동료 소통하기','청각','생활','안소연'],
+  ['청각 3-7','동네와 지역사회 이야기','청각','생활','안소연'],
+  ['뇌병변 1-1','위톡과 나누는 첫인사','뇌병변','디지털','최진영'],
+  ['뇌병변 1-2','그림으로 하는 대화','뇌병변','디지털','최진영'],
+  ['뇌병변 1-3','상황에 맞는 위톡 앱 대화','뇌병변','디지털','최진영'],
+  ['뇌병변 1-4','나의 경험을 바탕으로 수필 쓰기','뇌병변','디지털','최진영'],
+  ['뇌병변 1-5','내 마음대로 바꾸는 동화','뇌병변','디지털','최진영'],
+  ['뇌병변 1-6','생성형 AI 알아보기·활용하기','뇌병변','디지털','최진영'],
+  ['뇌병변 1-7','손 안의 세상, 스마트폰·짧은 동영상','뇌병변','디지털','최진영'],
+  ['뇌병변 2-1','단어와 단어 사이 띄우기','뇌병변','한글','이수연'],
+  ['뇌병변 2-2','사물과 동작을 연결하여 표현하기','뇌병변','한글','이수연'],
+  ['뇌병변 2-3','상황에 어울리는 말','뇌병변','한글','이수연'],
+  ['뇌병변 2-4','상황에 맞는 바른 말 익히기','뇌병변','한글','이수연'],
+  ['뇌병변 2-5','운율 따라 부르는 노래','뇌병변','한글','이수연'],
+  ['뇌병변 2-6','내 마음을 표현한 메모 한 줄','뇌병변','한글','이수연'],
+  ['뇌병변 3-1','건강한 생활 습관 기르기','뇌병변','생활','황보경'],
+  ['뇌병변 3-2','내 마음은 무지개','뇌병변','생활','황보경'],
+  ['뇌병변 3-3','내 삶의 주인공은 나야 나','뇌병변','생활','황보경'],
+  ['뇌병변 3-4','한 걸음 한 걸음! 어디든 갈 수 있어','뇌병변','생활','황보경'],
+  ['뇌병변 3-5','도움을 요청하는 의사소통','뇌병변','생활','황보경'],
+  ['뇌병변 3-6','의료와 복지, 나의 든든한 지원군','뇌병변','생활','황보경'],
+  ['뇌병변 3-7','공공기관 탐험으로 내게 맞는 서비스 찾기','뇌병변','생활','황보경'],
+];
+
+const phase1_1 = {'뇌병변 1-3':1,'시각 1-3':1,'청각 2-1':1};
+const phase1_2 = {'시각 2-6':1,'시각 3-6':1,'청각 1-1':1,'청각 3-6':1,'뇌병변 2-4':1,'뇌병변 3-5':1};
+const phase2_set = new Set(['시각 1-1','시각 1-2','시각 2-1','시각 2-2','시각 2-3','시각 2-4','시각 2-5','청각 1-2','청각 1-3','청각 1-4','청각 1-5','청각 1-6','청각 2-2','청각 2-3','뇌병변 1-1','뇌병변 1-2','뇌병변 1-4','뇌병변 1-5','뇌병변 1-6','뇌병변 1-7','뇌병변 2-1']);
+
+const KANBAN_COLS = ['todo','plan','design','dev','video','qa','done'];
+const KANBAN_LABELS = { todo:'시작 전', plan:'기획', design:'디자인', dev:'개발', video:'영상', qa:'검수중', done:'완료' };
+const STAGE_RULES = {
+  todo:   { plan:'todo',        ui:'todo',        art:'todo',        dev:'todo',        video:'todo',        qa:'todo' },
+  plan:   { plan:'in-progress', ui:'todo',        art:'todo',        dev:'todo',        video:'todo',        qa:'todo' },
+  design: { plan:'done',        ui:'in-progress', art:'in-progress', dev:'todo',        video:'todo',        qa:'todo' },
+  dev:    { plan:'done',        ui:'done',        art:'done',        dev:'in-progress', video:'todo',        qa:'todo' },
+  video:  { plan:'done',        ui:'done',        art:'done',        dev:'done',        video:'in-progress', qa:'todo' },
+  qa:     { plan:'done',        ui:'done',        art:'done',        dev:'done',        video:'done',        qa:'in-progress' },
+  done:   { plan:'done',        ui:'done',        art:'done',        dev:'done',        video:'done',        qa:'done' }
+};
+
+function buildLessons() {
+  return lessonDefs.map(([id, name, type, area, expert]) => {
+    let phase = 'Phase 3', priority = '안정 제작', plan_s='', plan_e='', dev_s='', dev_e='', qa_s='', qa_e='';
+    if (phase1_1[id]) {
+      phase = 'Phase 1'; priority = '1차 (6/19 공유)';
+      if (id === '뇌병변 1-3') { plan_s='2026-05-18'; plan_e='2026-05-22'; dev_s='2026-05-25'; dev_e='2026-06-05'; qa_s='2026-06-08'; qa_e='2026-06-10'; }
+      else if (id === '시각 1-3') { plan_s='2026-05-25'; plan_e='2026-05-29'; dev_s='2026-06-01'; dev_e='2026-06-12'; qa_s='2026-06-15'; qa_e='2026-06-17'; }
+      else if (id === '청각 2-1') { plan_s='2026-06-01'; plan_e='2026-06-05'; dev_s='2026-06-08'; dev_e='2026-06-19'; qa_s='2026-06-22'; qa_e='2026-06-24'; }
+    } else if (phase1_2[id]) {
+      phase = 'Phase 1'; priority = '2차 (QG-1 시연)';
+      plan_s='2026-06-22'; plan_e='2026-06-26'; dev_s='2026-06-29'; dev_e='2026-07-10'; qa_s='2026-07-10'; qa_e='2026-07-11';
+    } else if (phase2_set.has(id)) {
+      phase = 'Phase 2'; priority = '집중 제작 (1주)';
+    }
+    const def = (s, e, owner) => ({status:'todo', start:s, end:e, actualStart:'', actualEnd:'', owner:owner ? [owner] : [], notes:''});
+    const inProgress = id === '뇌병변 1-3';
+    return {
+      id, name, type, area, expert, phase, priority,
+      videoCount: phase1_1[id] || phase1_2[id] ? 3 : 2,
+      kanban: id === '뇌병변 1-3' ? 'plan' : 'plan',
+      stages: {
+        plan: { ...def(plan_s, plan_e, '최문선'), status: inProgress?'in-progress':'todo', actualStart: inProgress?'2026-05-18':'' },
+        ui:   { ...def(plan_s, plan_e, '수림'),   status: inProgress?'in-progress':'todo', actualStart: inProgress?'2026-05-18':'' },
+        art:  { ...def(plan_s, plan_e, '상백'),   status: inProgress?'in-progress':'todo', actualStart: inProgress?'2026-05-18':'' },
+        dev:  def(dev_s, dev_e, '개발팀'),
+        video: def(dev_s, dev_e, '영상팀'),
+        qa:    def(qa_s, qa_e, 'QA')
+      },
+      issues: [], notes: ''
+    };
+  });
+}
+
+SEED.lessons = buildLessons();
+
+const seedIssues = [
+  ['청각 1-1', '원고 미비 — 소성현 선생님께 보완 요청', '원고 내용이 너무 간략하여 5단계 모듈 매핑 어려움. 디지털문해 핵심 개념 보충 + 차시별 학습 목표 명확화 필요.', 'high', 'open', '2026-05-15'],
+  ['청각 2-1', '원고 미수령', '정명기 선생님 원고 미수령. 6/1 디자인 시작 전 확보 필요.', 'high', 'open', '2026-05-11'],
+  ['청각 3-6', '원고 수령 (안소연 팀장)', '안소연 팀장님 원고 수령 완료. 2차 6차시 진행 가능.', 'low', 'closed', '2026-05-15'],
+];
+seedIssues.forEach(([lid, title, desc, prio, status, date]) => {
+  const lesson = SEED.lessons.find(l => l.id === lid);
+  if (lesson) {
+    lesson.issues.push({
+      id: 'I-' + Math.random().toString(36).substr(2, 6),
+      title, description: desc, status,
+      priority: prio, created: date,
+      resolved: status === 'closed' ? date : null
+    });
+  }
+});
+
+// ============== State ==============
+let data = JSON.parse(JSON.stringify(SEED));
+let currentView = 'dashboard';
+let currentLessonId = null;
+let _suppressSave = false; // Firestore에서 받은 업데이트는 다시 쓰지 않게
+
+function saveData() {
+  if (_suppressSave) return;
+  data.updated = new Date().toISOString();
+  document.getElementById('updated').textContent = '최종 수정: ' + new Date().toLocaleString('ko-KR');
+  if (window.fbSetDoc) {
+    window.fbSetDoc(data).catch(e => toast('동기화 실패: ' + e.message, 'error'));
+  }
+}
+
+// ============== Helpers ==============
+function phaseClass(phase) {
+  if (phase === 'Phase 1') return 'p1';
+  if (phase === 'Phase 2') return 'p2';
+  return '';
+}
+function progressBars(l) {
+  return ['plan','ui','art','dev','video','qa'].map(s => `<div class="lc-stage ${l.stages[s].status}"></div>`).join('');
+}
+function todayISO() { return new Date().toISOString().slice(0,10); }
+function dateDiffDays(a, b) {
+  if (!a || !b) return null;
+  return Math.round((new Date(b) - new Date(a)) / 86400000);
+}
+function fmtMD(d) {
+  if (!d) return '—';
+  return d.slice(5).replace('-','/');
+}
+// 단계별 진척 상태 — 계획 vs 실제 비교
+function getStageScheduleStatus(s) {
+  const today = todayISO();
+  if (s.status === 'done') {
+    if (s.actualEnd && s.end) {
+      const diff = dateDiffDays(s.end, s.actualEnd); // +지연 / -빠름
+      if (diff > 0) return {state:'done-late', days:diff, label:`${diff}일 늦게 완료`};
+      if (diff < 0) return {state:'done-early', days:-diff, label:`${-diff}일 빨리 완료`};
+      return {state:'done-on-time', days:0, label:'정시 완료'};
+    }
+    return {state:'done', days:0, label:'완료'};
+  }
+  if (s.status === 'in-progress') {
+    if (s.end) {
+      const diff = dateDiffDays(today, s.end); // +남음 / -지연
+      if (diff < 0) return {state:'delayed', days:-diff, label:`${-diff}일 지연`};
+      if (diff === 0) return {state:'on-track', days:0, label:'오늘 마감'};
+      if (diff <= 2) return {state:'on-track', days:diff, label:`${diff}일 남음`};
+      return {state:'on-track', days:diff, label:`${diff}일 남음`};
+    }
+    return {state:'on-track', days:0, label:'진행 중'};
+  }
+  // todo
+  if (s.start) {
+    const diff = dateDiffDays(today, s.start); // +시작전 / -시작지연
+    if (diff < 0) return {state:'delayed', days:-diff, label:`시작 ${-diff}일 지연`};
+    if (diff === 0) return {state:'not-started', days:0, label:'오늘 시작 예정'};
+    return {state:'not-started', days:diff, label:`${diff}일 후 시작`};
+  }
+  return {state:'no-plan', days:0, label:'일정 미정'};
+}
+// 차시 전체 진척 상태 — 가장 큰 지연 표시
+function getLessonScheduleStatus(l) {
+  const stages = ['plan','ui','art','dev','video','qa'];
+  let maxDelay = 0;
+  let allDone = true;
+  for (const k of stages) {
+    const s = l.stages[k];
+    if (s.status !== 'done') allDone = false;
+    const ss = getStageScheduleStatus(s);
+    if (ss.state === 'delayed' || ss.state === 'done-late') {
+      maxDelay = Math.max(maxDelay, ss.days);
+    }
+  }
+  if (allDone) return {state:'done', label:'✓ 완료'};
+  if (maxDelay > 0) return {state:'delayed', label:`${maxDelay}일 지연`};
+  return {state:'on-track', label:'정상'};
+}
+function getFiltered() {
+  const f = {
+    phase: document.getElementById('filter-phase').value,
+    type: document.getElementById('filter-type').value,
+    issue: document.getElementById('filter-issue').value,
+    search: document.getElementById('filter-search').value.toLowerCase().trim()
+  };
+  return data.lessons.filter(l => {
+    if (f.phase && l.phase !== f.phase) return false;
+    if (f.type && l.type !== f.type) return false;
+    if (f.search && !(l.id.toLowerCase().includes(f.search) || l.name.toLowerCase().includes(f.search) || l.expert.toLowerCase().includes(f.search))) return false;
+    if (f.issue === 'open' && l.issues.filter(i => i.status === 'open').length === 0) return false;
+    if (f.issue === 'none' && l.issues.filter(i => i.status === 'open').length > 0) return false;
+    return true;
+  });
+}
+function lessonCard(l, draggable = false) {
+  const openIssues = l.issues.filter(i => i.status === 'open').length;
+  const dragAttr = draggable ? 'draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)"' : '';
+  const ls = getLessonScheduleStatus(l);
+  return `
+    <div class="lesson-card" ${dragAttr} data-lesson-id="${l.id}" onclick="openModal('${l.id}')">
+      <div class="lc-phase ${phaseClass(l.phase)}">${l.phase}</div>
+      <div class="lc-sched"><span class="sched-badge ${ls.state}">${ls.label}</span></div>
+      <div class="lc-id">${l.id}</div>
+      <div class="lc-name">${l.name}</div>
+      <div class="lc-meta">${l.expert} · ${l.priority || ''}</div>
+      <div class="lc-stages">${progressBars(l)}</div>
+      <div class="lc-stage-labels">
+        <span>기획</span><span>UI</span><span>아트</span><span>개발</span><span>영상</span><span>검수</span>
+      </div>
+      <div class="lc-footer">
+        ${openIssues > 0
+          ? `<span class="badge-issue">🚨 ${openIssues} OPEN</span>`
+          : `<span class="badge-issue ok">CLEAN</span>`}
+        <span class="badge-video">영상 ${l.videoCount}건</span>
+      </div>
+    </div>
+  `;
+}
+
+// ============== Renderers ==============
+function renderMilestones() {
+  document.getElementById('milestones').innerHTML = data.milestones.map(m => `
+    <div class="ms-card">
+      <div class="ms-flag">${m.flag}</div>
+      <div class="ms-name">${m.name}</div>
+      <div class="ms-date">${m.date}</div>
+    </div>
+  `).join('');
+}
+function renderSummary() {
+  const lessons = data.lessons;
+  const total = lessons.length;
+  const inProg = lessons.filter(l => Object.values(l.stages).some(s => s.status === 'in-progress')).length;
+  const done = lessons.filter(l => l.kanban === 'done').length;
+  const openIs = lessons.reduce((s,l) => s + l.issues.filter(i=>i.status==='open').length, 0);
+  const delayed = lessons.filter(l => getLessonScheduleStatus(l).state === 'delayed').length;
+  document.getElementById('summary-row').innerHTML = `
+    <div class="stat"><div class="stat-label">전체 차시</div><div class="stat-val">${total}</div></div>
+    <div class="stat"><div class="stat-label">진행 중</div><div class="stat-val green">${inProg}</div></div>
+    <div class="stat"><div class="stat-label">완료</div><div class="stat-val blue">${done}</div></div>
+    <div class="stat"><div class="stat-label">일정 지연</div><div class="stat-val amber">${delayed}</div></div>
+    <div class="stat"><div class="stat-label">미해결 이슈</div><div class="stat-val red">${openIs}</div></div>
+  `;
+}
+function renderDashboard() {
+  const filtered = getFiltered();
+  document.getElementById('count').textContent = `${filtered.length} / ${data.lessons.length} 차시`;
+  document.getElementById('main').innerHTML = `<div class="grid">${filtered.map(l => lessonCard(l)).join('')}</div>`;
+}
+function renderTable() {
+  const filtered = getFiltered();
+  document.getElementById('count').textContent = `${filtered.length} / ${data.lessons.length} 차시`;
+  const stages = ['plan','ui','art','dev','video','qa'];
+  const rows = filtered.map(l => {
+    const openIs = l.issues.filter(i => i.status === 'open').length;
+    const stageBar = stages.map(s => `<span class="${l.stages[s].status}" title="${s}"></span>`).join('');
+    const startD = Object.values(l.stages).map(s=>s.start).filter(Boolean).sort()[0] || '—';
+    const endD = Object.values(l.stages).map(s=>s.end).filter(Boolean).sort().reverse()[0] || '—';
+    const ls = getLessonScheduleStatus(l);
+    return `
+      <tr onclick="openModal('${l.id}')">
+        <td><strong>${l.id}</strong></td>
+        <td>${l.name}</td>
+        <td>${l.type}</td>
+        <td>${l.phase}</td>
+        <td>${l.expert}</td>
+        <td><span class="stage-mini">${stageBar}</span></td>
+        <td><span class="sched-badge ${ls.state}">${ls.label}</span></td>
+        <td>${l.videoCount}건</td>
+        <td>${openIs > 0 ? '🚨 '+openIs : '—'}</td>
+        <td>${startD}</td>
+        <td>${endD}</td>
+      </tr>`;
+  }).join('');
+  document.getElementById('main').innerHTML = `
+    <table class="wbs">
+      <thead><tr>
+        <th>차시ID</th><th>차시명</th><th>유형</th><th>Phase</th><th>전문가</th>
+        <th>진행도</th><th>일정 진척</th><th>영상</th><th>이슈</th><th>시작</th><th>종료</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+function renderKanban() {
+  const filtered = getFiltered();
+  document.getElementById('count').textContent = `${filtered.length} / ${data.lessons.length} 차시`;
+  const cols = {};
+  KANBAN_COLS.forEach(c => cols[c] = []);
+  filtered.forEach(l => {
+    const k = l.kanban || 'plan';
+    if (cols[k]) cols[k].push(l);
+    else cols.plan.push(l);
+  });
+  const html = KANBAN_COLS.map(c => {
+    const items = cols[c].map(l => lessonCard(l, true)).join('') || '<div class="kanban-empty">차시 없음</div>';
+    return `
+      <div class="kanban-col" data-col="${c}"
+           ondragover="dragOver(event)" ondragenter="dragEnter(event)"
+           ondragleave="dragLeave(event)" ondrop="drop(event)">
+        <h3>${KANBAN_LABELS[c]} <span class="count">${cols[c].length}</span></h3>
+        ${items}
+      </div>`;
+  }).join('');
+  document.getElementById('main').innerHTML = `<div class="kanban">${html}</div>`;
+}
+function renderIssues() {
+  const all = [];
+  data.lessons.forEach(l => l.issues.forEach(i => all.push({...i, lessonId:l.id, lessonName:l.name, lessonPhase:l.phase, lessonType:l.type})));
+  const f = {
+    phase: document.getElementById('filter-phase').value,
+    type: document.getElementById('filter-type').value,
+    search: document.getElementById('filter-search').value.toLowerCase().trim()
+  };
+  let filtered = all.filter(i => {
+    if (f.phase && i.lessonPhase !== f.phase) return false;
+    if (f.type && i.lessonType !== f.type) return false;
+    if (f.search && !(i.title.toLowerCase().includes(f.search) || (i.description||'').toLowerCase().includes(f.search) || i.lessonId.toLowerCase().includes(f.search))) return false;
+    return true;
+  });
+  filtered.sort((a,b) => {
+    if (a.status !== b.status) return a.status === 'open' ? -1 : 1;
+    const p = {high:0, medium:1, low:2};
+    if (p[a.priority] !== p[b.priority]) return p[a.priority] - p[b.priority];
+    return (b.created||'').localeCompare(a.created||'');
+  });
+  document.getElementById('count').textContent = `${filtered.length} 이슈`;
+  const items = filtered.map(i => `
+    <div class="issue-item ${i.priority} ${i.status==='closed'?'closed':''}" onclick="openModal('${i.lessonId}')">
+      <div class="ii-head">
+        <span class="ii-lesson">${i.lessonId}</span>
+        <span class="ii-prio ${i.priority}">${i.priority}</span>
+        <span class="ii-status ${i.status}">${i.status === 'open' ? '🔴 OPEN' : '✓ CLOSED'}</span>
+      </div>
+      <div class="ii-title">${i.title}</div>
+      ${i.description ? `<div class="ii-desc">${i.description}</div>` : ''}
+      <div class="ii-meta">생성: ${i.created || '—'}${i.resolved ? ' · 해결: '+i.resolved : ''} · ${i.lessonName}</div>
+    </div>`).join('');
+  document.getElementById('main').innerHTML = items ? `<div class="issue-list">${items}</div>` : `<div style="text-align:center;padding:60px;color:var(--cool-gray);font-family:'Source Code Pro',monospace;letter-spacing:2px;text-transform:uppercase">No Issues</div>`;
+}
+function render() {
+  renderMilestones();
+  renderSummary();
+  if (currentView === 'dashboard') renderDashboard();
+  else if (currentView === 'table') renderTable();
+  else if (currentView === 'kanban') renderKanban();
+  else if (currentView === 'issues') renderIssues();
+}
+
+// ============== Drag & Drop (Kanban) ==============
+let dragLessonId = null;
+function dragStart(e) {
+  dragLessonId = e.target.dataset.lessonId;
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function dragEnd(e) {
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.kanban-col').forEach(c => c.classList.remove('drag-over'));
+}
+function dragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+function dragEnter(e) {
+  const col = e.target.closest('.kanban-col');
+  if (col) col.classList.add('drag-over');
+}
+function dragLeave(e) {
+  const col = e.target.closest('.kanban-col');
+  if (col && !col.contains(e.relatedTarget)) col.classList.remove('drag-over');
+}
+function drop(e) {
+  e.preventDefault();
+  const col = e.target.closest('.kanban-col');
+  if (!col || !dragLessonId) return;
+  const newCol = col.dataset.col;
+  const lesson = data.lessons.find(l => l.id === dragLessonId);
+  if (lesson) {
+    lesson.kanban = newCol;
+    // 칸반 컬럼에 따라 단계 status 일괄 업데이트 (이전 단계는 자동 완료)
+    const rule = STAGE_RULES[newCol];
+    const today = todayISO();
+    if (rule) {
+      ['plan','ui','art','dev','video','qa'].forEach(s => {
+        const newStatus = rule[s];
+        lesson.stages[s].status = newStatus;
+        // 자동 실제 일정 기록
+        if (newStatus === 'in-progress' && !lesson.stages[s].actualStart) {
+          lesson.stages[s].actualStart = today;
+        }
+        if (newStatus === 'done') {
+          if (!lesson.stages[s].actualStart) lesson.stages[s].actualStart = today;
+          if (!lesson.stages[s].actualEnd) lesson.stages[s].actualEnd = today;
+        }
+        if (newStatus === 'todo') {
+          lesson.stages[s].actualStart = '';
+          lesson.stages[s].actualEnd = '';
+        }
+      });
+    }
+    saveData();
+    render();
+    toast(`${lesson.id} → ${KANBAN_LABELS[newCol]}`, 'success');
+  }
+  dragLessonId = null;
+}
+
+// ============== Modal ==============
+function openModal(lessonId) {
+  currentLessonId = lessonId;
+  const l = data.lessons.find(x => x.id === lessonId);
+  if (!l) return;
+  const stages = [['plan','기획'],['ui','UI/UX'],['art','아트'],['dev','개발'],['video','영상'],['qa','검수']];
+  const stagesHtml = `
+    <table class="stages-table">
+      <thead>
+        <tr>
+          <th>단계</th>
+          <th>상태</th>
+          <th>계획 일정</th>
+          <th>실제 일정</th>
+          <th>진척</th>
+          <th>담당</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${stages.map(([k,name]) => {
+          const s = l.stages[k];
+          const ss = getStageScheduleStatus(s);
+          return `
+            <tr>
+              <td class="st-name">${name}</td>
+              <td>
+                <select onchange="updateStage('${k}','status',this.value)">
+                  <option value="todo" ${s.status==='todo'?'selected':''}>시작 전</option>
+                  <option value="in-progress" ${s.status==='in-progress'?'selected':''}>진행 중</option>
+                  <option value="done" ${s.status==='done'?'selected':''}>완료</option>
+                </select>
+              </td>
+              <td><div class="dt-pair">
+                <input type="date" value="${s.start||''}" onchange="updateStage('${k}','start',this.value)" title="계획 시작">
+                <input type="date" value="${s.end||''}" onchange="updateStage('${k}','end',this.value)" title="계획 종료">
+              </div></td>
+              <td><div class="dt-pair">
+                <input type="date" value="${s.actualStart||''}" onchange="updateStage('${k}','actualStart',this.value)" title="실제 시작">
+                <input type="date" value="${s.actualEnd||''}" onchange="updateStage('${k}','actualEnd',this.value)" title="실제 종료">
+              </div></td>
+              <td><span class="sched-badge ${ss.state}">${ss.label}</span></td>
+              <td><input type="text" value="${(s.owner||[]).join(', ')}" onchange="updateStage('${k}','owner',this.value.split(',').map(x=>x.trim()).filter(Boolean))"></td>
+            </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    <div style="font-family:'Source Code Pro',monospace;font-size:10px;letter-spacing:1px;color:var(--cool-gray);margin:6px 0 14px;text-transform:uppercase">▸ 상태를 바꾸면 실제 일정이 자동 기록됩니다 (오늘 날짜)</div>
+  `;
+  const issuesHtml = l.issues.map(i => `
+    <div class="issue-mini ${i.priority} ${i.status==='closed'?'closed':''}">
+      <div style="flex:1">
+        <div class="im-title">[${i.priority.toUpperCase()}] ${i.title}</div>
+        ${i.description ? `<div class="im-desc">${i.description}</div>` : ''}
+        <div class="im-meta">생성: ${i.created}${i.resolved ? ' · 해결: '+i.resolved : ''}</div>
+      </div>
+      <div class="im-actions">
+        <button onclick="toggleIssue('${i.id}')" title="${i.status==='open'?'해결':'다시 열기'}">${i.status==='open'?'✓':'↺'}</button>
+        <button onclick="deleteIssue('${i.id}')" title="삭제">🗑</button>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-id">${l.phase} · ${l.type} · ${l.area}</div>
+    <h2>${l.id} · ${l.name}</h2>
+    <div class="modal-sub">전문가 ${l.expert} · ${l.priority || ''}</div>
+    <div class="info-row"><label>칸반</label>
+      <select onchange="updateLesson('kanban',this.value)">
+        ${KANBAN_COLS.map(c => `<option value="${c}" ${l.kanban===c?'selected':''}>${KANBAN_LABELS[c]}</option>`).join('')}
+      </select>
+    </div>
+    <div class="info-row"><label>영상 건수</label><input type="number" value="${l.videoCount}" min="0" onchange="updateLesson('videoCount',parseInt(this.value)||0)"></div>
+    <div class="info-row"><label>메모</label><input type="text" value="${l.notes||''}" onchange="updateLesson('notes',this.value)"></div>
+    <h3 style="margin:24px 0 12px;font-family:'Source Code Pro',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--forest)">📊 단계별 진행 상황 — 계획 vs 실제</h3>
+    ${stagesHtml}
+    <div class="issue-section">
+      <h3>🚨 이슈 (${l.issues.filter(i=>i.status==='open').length} OPEN / ${l.issues.length} TOTAL)</h3>
+      ${issuesHtml || '<div style="color:var(--cool-gray);font-size:13px;padding:10px;font-style:italic">이슈가 없습니다.</div>'}
+      <div class="issue-add">
+        <input id="new-issue-title" placeholder="새 이슈 제목 (예: 원고 미비, 영상 콘티 지연)" />
+        <select id="new-issue-priority">
+          <option value="high">High</option>
+          <option value="medium" selected>Medium</option>
+          <option value="low">Low</option>
+        </select>
+        <input id="new-issue-desc" placeholder="설명 (선택)" style="flex:2" />
+        <button onclick="addIssue()">+ 이슈 추가</button>
+      </div>
+    </div>`;
+  document.getElementById('modal-bg').classList.add('active');
+}
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('active');
+  currentLessonId = null;
+  render();
+}
+function updateStage(k, f, v) {
+  const l = data.lessons.find(x => x.id === currentLessonId);
+  if (!l) return;
+  l.stages[k][f] = v;
+  if (f === 'status') {
+    const today = todayISO();
+    if (v === 'in-progress' && !l.stages[k].actualStart) {
+      l.stages[k].actualStart = today;
+    }
+    if (v === 'done') {
+      if (!l.stages[k].actualStart) l.stages[k].actualStart = today;
+      if (!l.stages[k].actualEnd) l.stages[k].actualEnd = today;
+    }
+    if (v === 'todo') {
+      l.stages[k].actualStart = '';
+      l.stages[k].actualEnd = '';
+    }
+    saveData();
+    openModal(currentLessonId);
+    toast('저장됨', 'success');
+    return;
+  }
+  saveData();
+  toast('저장됨', 'success');
+}
+function updateLesson(f, v) {
+  const l = data.lessons.find(x => x.id === currentLessonId);
+  if (!l) return;
+  l[f] = v;
+  saveData();
+  toast('저장됨', 'success');
+}
+function addIssue() {
+  const title = document.getElementById('new-issue-title').value.trim();
+  if (!title) { toast('제목을 입력하세요', 'error'); return; }
+  const desc = document.getElementById('new-issue-desc').value.trim();
+  const priority = document.getElementById('new-issue-priority').value;
+  const l = data.lessons.find(x => x.id === currentLessonId);
+  if (!l) return;
+  l.issues.push({
+    id: 'I-' + Math.random().toString(36).substr(2,6),
+    title, description: desc, status: 'open',
+    priority, created: new Date().toISOString().slice(0,10), resolved: null
+  });
+  saveData();
+  openModal(currentLessonId);
+  toast('이슈 추가됨', 'success');
+}
+function toggleIssue(id) {
+  const l = data.lessons.find(x => x.id === currentLessonId);
+  const i = l && l.issues.find(x => x.id === id);
+  if (!i) return;
+  if (i.status === 'open') { i.status = 'closed'; i.resolved = new Date().toISOString().slice(0,10); }
+  else { i.status = 'open'; i.resolved = null; }
+  saveData();
+  openModal(currentLessonId);
+}
+function deleteIssue(id) {
+  if (!confirm('이 이슈를 삭제하시겠습니까?')) return;
+  const l = data.lessons.find(x => x.id === currentLessonId);
+  if (!l) return;
+  l.issues = l.issues.filter(x => x.id !== id);
+  saveData();
+  openModal(currentLessonId);
+}
+
+function exportJSON() {
+  data.updated = new Date().toISOString().slice(0,10);
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `wbs-data-${data.updated}.json`;
+  a.click();
+  toast('JSON 다운로드', 'success');
+}
+function exportCSV() {
+  const headers = ['차시ID','차시명','장애유형','영역','Phase','우선순위','작성자','영상건수','칸반위치','일정상태',
+    '기획상태','기획계획시작','기획계획종료','기획실제시작','기획실제종료',
+    'UI상태','UI계획시작','UI계획종료','UI실제시작','UI실제종료',
+    '아트상태','아트계획시작','아트계획종료','아트실제시작','아트실제종료',
+    '개발상태','개발계획시작','개발계획종료','개발실제시작','개발실제종료',
+    '영상상태','영상계획시작','영상계획종료','영상실제시작','영상실제종료',
+    '검수상태','검수계획시작','검수계획종료','검수실제시작','검수실제종료',
+    '미해결이슈','전체이슈','메모'];
+  const rows = data.lessons.map(l => {
+    const ls = getLessonScheduleStatus(l);
+    return [
+      l.id, l.name, l.type, l.area, l.phase, l.priority||'', l.expert, l.videoCount, KANBAN_LABELS[l.kanban||'plan']||'', ls.label,
+      l.stages.plan.status, l.stages.plan.start, l.stages.plan.end, l.stages.plan.actualStart||'', l.stages.plan.actualEnd||'',
+      l.stages.ui.status, l.stages.ui.start, l.stages.ui.end, l.stages.ui.actualStart||'', l.stages.ui.actualEnd||'',
+      l.stages.art.status, l.stages.art.start, l.stages.art.end, l.stages.art.actualStart||'', l.stages.art.actualEnd||'',
+      l.stages.dev.status, l.stages.dev.start, l.stages.dev.end, l.stages.dev.actualStart||'', l.stages.dev.actualEnd||'',
+      l.stages.video.status, l.stages.video.start, l.stages.video.end, l.stages.video.actualStart||'', l.stages.video.actualEnd||'',
+      l.stages.qa.status, l.stages.qa.start, l.stages.qa.end, l.stages.qa.actualStart||'', l.stages.qa.actualEnd||'',
+      l.issues.filter(i=>i.status==='open').length, l.issues.length, l.notes||''
+    ];
+  });
+  const csv = [headers, ...rows].map(r => r.map(c => {
+    const s = String(c||'');
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+  }).join(',')).join('\n');
+  const blob = new Blob(['﻿' + csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `wbs-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast('CSV 다운로드', 'success');
+}
+function importJSON(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const imp = JSON.parse(e.target.result);
+      if (!imp.lessons || !imp.milestones) throw new Error('형식 오류');
+      data = imp;
+      saveData();
+      render();
+      toast('가져오기 완료 · 모든 사용자에게 반영됨', 'success');
+    } catch(err) { toast('JSON 오류: '+err.message, 'error'); }
+  };
+  r.readAsText(file);
+}
+function resetData() {
+  if (!confirm('⚠ 모든 사용자에게 영향을 줍니다. 시드 데이터로 초기화하시겠습니까?')) return;
+  data = JSON.parse(JSON.stringify(SEED));
+  saveData();
+  render();
+  toast('초기화 완료', 'success');
+}
+
+function toast(msg, cls) {
+  const t = document.createElement('div');
+  t.className = 'toast ' + (cls||'');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 1800);
+}
+
+document.querySelectorAll('.view-tabs button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.view-tabs button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    currentView = b.dataset.view;
+    render();
+  });
+});
+['filter-phase','filter-type','filter-issue','filter-search'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', render);
+  el.addEventListener('change', render);
+});
+document.getElementById('modal-bg').addEventListener('click', e => {
+  if (e.target.id === 'modal-bg') closeModal();
+});
+document.getElementById('updated').textContent = '연결 중... ⏳';
+render();
+
+// ============== Firestore 실시간 동기화 ==============
+function startFirestore() {
+  if (!window.fbOnSnap) return;
+  window.fbOnSnap(async (snap) => {
+    if (snap.exists()) {
+      _suppressSave = true;
+      data = snap.data();
+      if (!data.lessons || data.lessons.length === 0 || data.version !== SEED.version) {
+        _suppressSave = false;
+        data = JSON.parse(JSON.stringify(SEED));
+        saveData();
+        return;
+      }
+      _suppressSave = false;
+      const u = data.updated ? new Date(data.updated).toLocaleString('ko-KR') : '—';
+      document.getElementById('updated').textContent = '🟢 실시간 · 최종 ' + u;
+      if (currentLessonId) openModal(currentLessonId);
+      else render();
+    } else {
+      data = JSON.parse(JSON.stringify(SEED));
+      await window.fbSetDoc(data);
+      toast('초기 데이터 생성됨', 'success');
+    }
+  });
+}
+if (window.fbReady) startFirestore();
+else document.addEventListener('fbready', startFirestore);
+</script>
+
+</body>
+</html>
