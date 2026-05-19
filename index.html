@@ -107,8 +107,19 @@
 
   /* ===== DASHBOARD CARDS ===== */
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-  .lesson-card{background:#fff;border:1px solid var(--silver-teal);border-radius:16px;padding:18px 20px;cursor:pointer;transition:all 0.2s;position:relative;box-shadow:var(--shadow-subtle)}
+  .lesson-card{background:#fff;border:1px solid var(--silver-teal);border-radius:16px;padding:18px 20px;cursor:pointer;transition:all 0.2s;position:relative;box-shadow:var(--shadow-subtle);border-left-width:4px;border-left-color:var(--silver-teal)}
   .lesson-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-card);border-color:var(--dark-green)}
+  .lesson-card.is-delayed{border-left-color:#cd2c2c;background:linear-gradient(90deg,#fdedeb 0%,#fff 12%)}
+  .lesson-card.is-delayed:hover{border-color:#cd2c2c;border-left-color:#cd2c2c}
+  .lesson-card.is-ms-pending:not(.is-delayed){border-left-color:#cc7700;background:linear-gradient(90deg,#fff7ec 0%,#fff 12%)}
+  .lesson-card.is-ms-pending:not(.is-delayed):hover{border-color:#cc7700;border-left-color:#cc7700}
+  .urgency-dot{display:inline-block;width:8px;height:8px;border-radius:100px;margin-left:4px;vertical-align:middle}
+  .urgency-dot.high{background:#cd2c2c;box-shadow:0 0 0 2px rgba(205,44,44,0.2)}
+  .urgency-dot.medium{background:#cc7700}
+  .urgency-dot.low{background:var(--action-blue)}
+  .badge-ms{padding:3px 10px;border-radius:100px;font-size:11px;font-family:'Source Code Pro',monospace;letter-spacing:0.5px;font-weight:500}
+  .badge-ms.ok{background:rgba(0,237,100,0.15);color:var(--dark-green)}
+  .badge-ms.pending{background:#fff3e0;color:#cc7700}
   .lesson-card .lc-phase{position:absolute;top:18px;right:18px;font-family:'Source Code Pro',monospace;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--cool-gray);background:var(--bg-light);padding:3px 10px;border-radius:100px;border:1px solid var(--silver-teal)}
   .lesson-card .lc-phase.p1{background:rgba(0,237,100,0.1);color:var(--dark-green);border-color:var(--mg-green)}
   .lesson-card .lc-phase.p2{background:rgba(0,108,250,0.08);color:var(--action-blue);border-color:rgba(0,108,250,0.3)}
@@ -120,6 +131,9 @@
   .lc-stage.todo{background:var(--silver-teal)}
   .lc-stage.in-progress{background:var(--mg-green)}
   .lc-stage.done{background:var(--dark-green)}
+  .lc-stage.is-delayed{background:#cd2c2c}
+  .lc-stage.in-progress.is-delayed{background:#cd2c2c}
+  .lc-stage.done.is-delayed{background:#cc7700}
   .lc-stage-labels{display:flex;gap:3px;font-family:'Source Code Pro',monospace;font-size:9px;letter-spacing:0.5px;color:var(--cool-gray);text-align:center;text-transform:uppercase;font-weight:500}
   .lc-stage-labels span{flex:1}
   .lc-footer{display:flex;gap:8px;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--bg-light);font-size:12px;color:var(--cool-gray)}
@@ -296,11 +310,22 @@
     </div>
     <select id="filter-phase">
       <option value="">전체 Phase</option>
-      <option>Phase 1</option><option>Phase 2</option><option>Phase 3</option>
+      <option selected>Phase 1</option><option>Phase 2</option><option>Phase 3</option>
     </select>
     <select id="filter-type">
       <option value="">전체 유형</option>
       <option>시각</option><option>청각</option><option>뇌병변</option>
+    </select>
+    <select id="filter-urgency">
+      <option value="">전체 우선순위</option>
+      <option value="high">🔴 High</option>
+      <option value="medium">🟡 Medium</option>
+      <option value="low">🔵 Low</option>
+    </select>
+    <select id="filter-manuscript">
+      <option value="">원고 전체</option>
+      <option value="pending">📄 원고 대기</option>
+      <option value="received">📄 원고 수령</option>
     </select>
     <select id="filter-issue">
       <option value="">이슈 전체</option>
@@ -330,7 +355,7 @@
 <script>
 // ============== 시드 데이터 ==============
 const SEED = {
-  version: 3,
+  version: 4,
   updated: '2026-05-19',
   milestones: [
     { id:'M1', name:'프로토타입 시연 (1박2일)', date:'2026-07-10 ~ 07-11', flag:'7월 초', notes:'9차시 알파 시연·발주처·전문가 9인 피드백' },
@@ -436,17 +461,20 @@ function buildLessons() {
     }
     const def = (s, e, owner) => ({status:'todo', start:s, end:e, actualStart:'', actualEnd:'', owner:owner ? [owner] : [], notes:''});
     const inProgress = id === '뇌병변 1-3';
+    // 우선순위: Phase 1 = high, Phase 2 = medium, Phase 3 = low
+    const urgency = phase === 'Phase 1' ? 'high' : (phase === 'Phase 2' ? 'medium' : 'low');
     return {
-      id, name, type, area, expert, phase, priority,
+      id, name, type, area, expert, phase, priority, urgency,
+      manuscript: { received: false, date: '', source: expert },
       videoCount: phase1_1[id] || phase1_2[id] ? 3 : 2,
-      kanban: id === '뇌병변 1-3' ? 'plan' : 'plan',
+      kanban: inProgress ? 'plan' : 'todo',
       stages: {
         plan: { ...def(plan_s, plan_e, '최문선'), status: inProgress?'in-progress':'todo', actualStart: inProgress?'2026-05-18':'' },
-        ui:   { ...def(plan_s, plan_e, '수림'),   status: inProgress?'in-progress':'todo', actualStart: inProgress?'2026-05-18':'' },
-        art:  { ...def(plan_s, plan_e, '상백'),   status: inProgress?'in-progress':'todo', actualStart: inProgress?'2026-05-18':'' },
-        dev:  def(dev_s, dev_e, '개발팀'),
-        video: def(dev_s, dev_e, '영상팀'),
-        qa:    def(qa_s, qa_e, 'QA')
+        ui:   { ...def(plan_s, plan_e, '임수림'), status: inProgress?'in-progress':'todo', actualStart: inProgress?'2026-05-18':'' },
+        art:  { ...def(plan_s, plan_e, '김상백'), status: inProgress?'in-progress':'todo', actualStart: inProgress?'2026-05-18':'' },
+        dev:  def(dev_s, dev_e, '전현진'),
+        video: def(dev_s, dev_e, '이홍석'),
+        qa:    def(qa_s, qa_e, '최문선')
       },
       issues: [], notes: ''
     };
@@ -454,6 +482,18 @@ function buildLessons() {
 }
 
 SEED.lessons = buildLessons();
+
+// 원고 수령 상태 시드 (실제 진행 반영)
+const manuscriptStatus = {
+  '뇌병변 1-3': { received: true, date: '2026-05-15', source: '최진영' },
+  '청각 3-6':   { received: true, date: '2026-05-15', source: '안소연 팀장' },
+  '청각 1-1':   { received: false, date: '', source: '소성현 (보완 요청 중)' },
+  '청각 2-1':   { received: false, date: '', source: '정명기 (미수령)' },
+};
+Object.entries(manuscriptStatus).forEach(([id, ms]) => {
+  const l = SEED.lessons.find(x => x.id === id);
+  if (l) l.manuscript = ms;
+});
 
 const seedIssues = [
   ['청각 1-1', '원고 미비 — 소성현 선생님께 보완 요청', '원고 내용이 너무 간략하여 5단계 모듈 매핑 어려움. 디지털문해 핵심 개념 보충 + 차시별 학습 목표 명확화 필요.', 'high', 'open', '2026-05-15'],
@@ -494,7 +534,12 @@ function phaseClass(phase) {
   return '';
 }
 function progressBars(l) {
-  return ['plan','ui','art','dev','video','qa'].map(s => `<div class="lc-stage ${l.stages[s].status}"></div>`).join('');
+  return ['plan','ui','art','dev','video','qa'].map(s => {
+    const stg = l.stages[s];
+    const ss = getStageScheduleStatus(stg);
+    const delayCls = (ss.state === 'delayed' || ss.state === 'done-late') ? ' is-delayed' : '';
+    return `<div class="lc-stage ${stg.status}${delayCls}"></div>`;
+  }).join('');
 }
 function todayISO() { return new Date().toISOString().slice(0,10); }
 function dateDiffDays(a, b) {
@@ -557,12 +602,17 @@ function getFiltered() {
   const f = {
     phase: document.getElementById('filter-phase').value,
     type: document.getElementById('filter-type').value,
+    urgency: document.getElementById('filter-urgency')?.value || '',
+    manuscript: document.getElementById('filter-manuscript')?.value || '',
     issue: document.getElementById('filter-issue').value,
     search: document.getElementById('filter-search').value.toLowerCase().trim()
   };
   return data.lessons.filter(l => {
     if (f.phase && l.phase !== f.phase) return false;
     if (f.type && l.type !== f.type) return false;
+    if (f.urgency && (l.urgency||'medium') !== f.urgency) return false;
+    if (f.manuscript === 'received' && !(l.manuscript && l.manuscript.received)) return false;
+    if (f.manuscript === 'pending' && l.manuscript && l.manuscript.received) return false;
     if (f.search && !(l.id.toLowerCase().includes(f.search) || l.name.toLowerCase().includes(f.search) || l.expert.toLowerCase().includes(f.search))) return false;
     if (f.issue === 'open' && l.issues.filter(i => i.status === 'open').length === 0) return false;
     if (f.issue === 'none' && l.issues.filter(i => i.status === 'open').length > 0) return false;
@@ -573,11 +623,18 @@ function lessonCard(l, draggable = false) {
   const openIssues = l.issues.filter(i => i.status === 'open').length;
   const dragAttr = draggable ? 'draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)"' : '';
   const ls = getLessonScheduleStatus(l);
+  const urgency = l.urgency || 'medium';
+  const msReceived = l.manuscript && l.manuscript.received;
+  const cardClasses = [
+    'lesson-card',
+    ls.state === 'delayed' ? 'is-delayed' : '',
+    !msReceived ? 'is-ms-pending' : ''
+  ].filter(Boolean).join(' ');
   return `
-    <div class="lesson-card" ${dragAttr} data-lesson-id="${l.id}" onclick="openModal('${l.id}')">
+    <div class="${cardClasses}" ${dragAttr} data-lesson-id="${l.id}" onclick="openModal('${l.id}')">
       <div class="lc-phase ${phaseClass(l.phase)}">${l.phase}</div>
       <div class="lc-sched"><span class="sched-badge ${ls.state}">${ls.label}</span></div>
-      <div class="lc-id">${l.id}</div>
+      <div class="lc-id">${l.id} <span class="urgency-dot ${urgency}" title="우선순위 ${urgency}"></span></div>
       <div class="lc-name">${l.name}</div>
       <div class="lc-meta">${l.expert} · ${l.priority || ''}</div>
       <div class="lc-stages">${progressBars(l)}</div>
@@ -585,10 +642,13 @@ function lessonCard(l, draggable = false) {
         <span>기획</span><span>UI</span><span>아트</span><span>개발</span><span>영상</span><span>검수</span>
       </div>
       <div class="lc-footer">
+        ${msReceived
+          ? `<span class="badge-ms ok">📄 원고 OK</span>`
+          : `<span class="badge-ms pending">📄 원고 대기</span>`}
         ${openIssues > 0
-          ? `<span class="badge-issue">🚨 ${openIssues} OPEN</span>`
+          ? `<span class="badge-issue">🚨 ${openIssues}</span>`
           : `<span class="badge-issue ok">CLEAN</span>`}
-        <span class="badge-video">영상 ${l.videoCount}건</span>
+        <span class="badge-video">🎬 ${l.videoCount}</span>
       </div>
     </div>
   `;
@@ -634,12 +694,16 @@ function renderTable() {
     const startD = Object.values(l.stages).map(s=>s.start).filter(Boolean).sort()[0] || '—';
     const endD = Object.values(l.stages).map(s=>s.end).filter(Boolean).sort().reverse()[0] || '—';
     const ls = getLessonScheduleStatus(l);
+    const urgency = l.urgency || 'medium';
+    const msOk = l.manuscript && l.manuscript.received;
     return `
       <tr onclick="openModal('${l.id}')">
         <td><strong>${l.id}</strong></td>
         <td>${l.name}</td>
         <td>${l.type}</td>
         <td>${l.phase}</td>
+        <td><span class="urgency-dot ${urgency}"></span> ${urgency.toUpperCase()}</td>
+        <td>${msOk ? '<span class="badge-ms ok">OK</span>' : '<span class="badge-ms pending">대기</span>'}</td>
         <td>${l.expert}</td>
         <td><span class="stage-mini">${stageBar}</span></td>
         <td><span class="sched-badge ${ls.state}">${ls.label}</span></td>
@@ -652,7 +716,7 @@ function renderTable() {
   document.getElementById('main').innerHTML = `
     <table class="wbs">
       <thead><tr>
-        <th>차시ID</th><th>차시명</th><th>유형</th><th>Phase</th><th>전문가</th>
+        <th>차시ID</th><th>차시명</th><th>유형</th><th>Phase</th><th>우선순위</th><th>원고</th><th>전문가</th>
         <th>진행도</th><th>일정 진척</th><th>영상</th><th>이슈</th><th>시작</th><th>종료</th>
       </tr></thead>
       <tbody>${rows}</tbody>
@@ -849,6 +913,21 @@ function openModal(lessonId) {
         ${KANBAN_COLS.map(c => `<option value="${c}" ${l.kanban===c?'selected':''}>${KANBAN_LABELS[c]}</option>`).join('')}
       </select>
     </div>
+    <div class="info-row"><label>우선순위</label>
+      <select onchange="updateLesson('urgency',this.value)">
+        <option value="high" ${(l.urgency||'medium')==='high'?'selected':''}>🔴 High</option>
+        <option value="medium" ${(l.urgency||'medium')==='medium'?'selected':''}>🟡 Medium</option>
+        <option value="low" ${(l.urgency||'medium')==='low'?'selected':''}>🔵 Low</option>
+      </select>
+    </div>
+    <div class="info-row"><label>원고 수령</label>
+      <select onchange="updateManuscript('received',this.value==='true')">
+        <option value="false" ${!(l.manuscript&&l.manuscript.received)?'selected':''}>📄 대기 중</option>
+        <option value="true" ${(l.manuscript&&l.manuscript.received)?'selected':''}>✓ 수령 완료</option>
+      </select>
+    </div>
+    <div class="info-row"><label>수령일</label><input type="date" value="${(l.manuscript&&l.manuscript.date)||''}" onchange="updateManuscript('date',this.value)"></div>
+    <div class="info-row"><label>원고 출처</label><input type="text" value="${(l.manuscript&&l.manuscript.source)||''}" placeholder="선생님 이름 / 비고" onchange="updateManuscript('source',this.value)"></div>
     <div class="info-row"><label>영상 건수</label><input type="number" value="${l.videoCount}" min="0" onchange="updateLesson('videoCount',parseInt(this.value)||0)"></div>
     <div class="info-row"><label>메모</label><input type="text" value="${l.notes||''}" onchange="updateLesson('notes',this.value)"></div>
     <h3 style="margin:24px 0 12px;font-family:'Source Code Pro',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--forest)">📊 단계별 진행 상황 — 계획 vs 실제</h3>
@@ -904,7 +983,23 @@ function updateLesson(f, v) {
   if (!l) return;
   l[f] = v;
   saveData();
+  if (f === 'urgency' || f === 'kanban') {
+    openModal(currentLessonId);
+  }
   toast('저장됨', 'success');
+}
+function updateManuscript(f, v) {
+  const l = data.lessons.find(x => x.id === currentLessonId);
+  if (!l) return;
+  if (!l.manuscript) l.manuscript = { received: false, date: '', source: '' };
+  l.manuscript[f] = v;
+  // 수령 완료로 토글하면 오늘 날짜 자동 입력
+  if (f === 'received' && v === true && !l.manuscript.date) {
+    l.manuscript.date = todayISO();
+  }
+  saveData();
+  openModal(currentLessonId);
+  toast(v && f==='received' ? '원고 수령 기록' : '저장됨', 'success');
 }
 function addIssue() {
   const title = document.getElementById('new-issue-title').value.trim();
@@ -950,7 +1045,7 @@ function exportJSON() {
   toast('JSON 다운로드', 'success');
 }
 function exportCSV() {
-  const headers = ['차시ID','차시명','장애유형','영역','Phase','우선순위','작성자','영상건수','칸반위치','일정상태',
+  const headers = ['차시ID','차시명','장애유형','영역','Phase','우선순위','원고수령','원고수령일','원고출처','작성자','영상건수','칸반위치','일정상태',
     '기획상태','기획계획시작','기획계획종료','기획실제시작','기획실제종료',
     'UI상태','UI계획시작','UI계획종료','UI실제시작','UI실제종료',
     '아트상태','아트계획시작','아트계획종료','아트실제시작','아트실제종료',
@@ -960,8 +1055,11 @@ function exportCSV() {
     '미해결이슈','전체이슈','메모'];
   const rows = data.lessons.map(l => {
     const ls = getLessonScheduleStatus(l);
+    const ms = l.manuscript || {};
     return [
-      l.id, l.name, l.type, l.area, l.phase, l.priority||'', l.expert, l.videoCount, KANBAN_LABELS[l.kanban||'plan']||'', ls.label,
+      l.id, l.name, l.type, l.area, l.phase, (l.urgency||'medium').toUpperCase(),
+      ms.received ? 'OK' : '대기', ms.date||'', ms.source||'',
+      l.expert, l.videoCount, KANBAN_LABELS[l.kanban||'todo']||'', ls.label,
       l.stages.plan.status, l.stages.plan.start, l.stages.plan.end, l.stages.plan.actualStart||'', l.stages.plan.actualEnd||'',
       l.stages.ui.status, l.stages.ui.start, l.stages.ui.end, l.stages.ui.actualStart||'', l.stages.ui.actualEnd||'',
       l.stages.art.status, l.stages.art.start, l.stages.art.end, l.stages.art.actualStart||'', l.stages.art.actualEnd||'',
@@ -1021,8 +1119,9 @@ document.querySelectorAll('.view-tabs button').forEach(b => {
     render();
   });
 });
-['filter-phase','filter-type','filter-issue','filter-search'].forEach(id => {
+['filter-phase','filter-type','filter-urgency','filter-manuscript','filter-issue','filter-search'].forEach(id => {
   const el = document.getElementById(id);
+  if (!el) return;
   el.addEventListener('input', render);
   el.addEventListener('change', render);
 });
