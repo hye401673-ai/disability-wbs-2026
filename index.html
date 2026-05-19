@@ -774,7 +774,7 @@ function getFiltered() {
     issue: document.getElementById('filter-issue').value,
     search: document.getElementById('filter-search').value.toLowerCase().trim()
   };
-  return data.lessons.filter(l => {
+  const filtered = data.lessons.filter(l => {
     if (f.phase && l.phase !== f.phase) return false;
     if (f.type && l.type !== f.type) return false;
     if (f.urgency && (l.urgency||'medium') !== f.urgency) return false;
