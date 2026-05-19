@@ -1275,6 +1275,24 @@ function startFirestore() {
       saveData();
       return;
     }
+
+    // 🛡 로컬이 더 최신이면 (Firestore에 아직 push 못한 변경분 보존) → 원격 데이터 무시
+    const localUpdated = data && data.updated ? data.updated : '';
+    const remoteUpdated = remote.updated || '';
+    if (localUpdated && localUpdated > remoteUpdated) {
+      // 우리가 더 최신 — Firestore 살아있으면 다시 push 시도
+      if (!firestoreDisabled) {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+          const h = dataHash(data);
+          if (h !== lastSavedHash && window.fbSetDoc) {
+            window.fbSetDoc(data).then(() => { lastSavedHash = h; }).catch(()=>{});
+          }
+        }, 500);
+      }
+      return;
+    }
+
     _suppressSave = true;
     data = remote;
     lastSavedHash = dataHash(data);
