@@ -51,24 +51,49 @@ git push origin main
 
 ---
 
-## 🔄 협업 워크플로
+## 🔄 협업 워크플로 (하이브리드 — Firestore + data.json)
 
-이 페이지는 **로컬 편집 + JSON 동기화** 방식입니다 (실시간 협업 X).
+페이지가 데이터를 읽어오는 **우선순위**:
 
-### 메인 편집자 (기획팀)
+```
+1. localStorage (본인 작업분, 즉시)
+2. data.json (repo의 baseline, fetch)
+3. Firestore (실시간 협업, 살아있으면)
+```
 
-1. URL 접속 → 차시 클릭 → 단계 상태·일정·이슈 편집
-2. 변경사항은 **브라우저 localStorage**에 자동 저장
-3. 주요 변경 후 **📥 JSON 저장** 버튼 → `wbs-data-YYYY-MM-DD.json` 다운로드
-4. 다운로드한 JSON을 repo의 `data.json`으로 commit·push
-5. (또는 HTML 안의 `SEED` 객체를 새 JSON으로 교체 후 commit·push)
+세 군데 중 **가장 최신** (`updated` 타임스탬프 비교) 데이터를 사용합니다.
+
+### 정상 상태 (Firestore 살아있음)
+
+- 모든 변경분이 자동으로 다른 팀원 화면에 실시간 반영
+- 메인 편집자가 따로 push할 필요 X
+- 헤더 표시: `🟢 실시간 · 최종 …`
+
+### Firestore quota 초과 시 (`⚠ 로컬 전용` 표시될 때)
+
+Firestore 무료 플랜은 **하루 20K writes** 제한이 있고, 초과 시 자정 UTC(한국 오전 9시) 리셋됩니다.
+
+이 상태에서는 본인 변경분이 다른 사람에게 안 보입니다. 해결책 두 가지:
+
+**A. 그냥 기다리기 (가장 편함)** — 다음날 오전 9시 이후 본인이 한 번 저장만 트리거하면 자동 동기화됩니다.
+
+**B. data.json으로 즉시 배포 (메인 편집자)**
+
+1. 페이지에서 **📥 JSON 저장** 버튼 클릭 → `wbs-data-YYYY-MM-DD.json` 다운로드
+2. 다운로드한 파일을 `data.json`으로 **이름 변경**
+3. repo의 `data.json`을 **덮어쓰기** commit·push:
+   ```bash
+   git add data.json
+   git commit -m "data update YYYY-MM-DD"
+   git push
+   ```
+4. 1~2분 후 다른 팀원이 새로고침하면 자동으로 새 `data.json` 받아감
 
 ### 보기 전용 (디자이너·개발자·발주처)
 
 - URL만 접속하면 됨
-- 편집해도 본인 PC localStorage에만 저장 (다른 사람에게 안 보임)
+- 편집하면 본인 PC localStorage에 저장 (+ Firestore 살아있으면 다른 사람에게도)
 - 메인 편집자가 새 데이터 push하면 새로고침으로 최신 받음
-  - 단, 본인이 편집한 게 있으면 **🔄 초기화** 버튼으로 시드 데이터 복귀
 
 ---
 
@@ -132,3 +157,5 @@ git push origin main
 
 - v1 (2026-05-15) · 초기 빌드 · 60차시 시드 + 시드 이슈 3건
 - v2 (2026-05-19) · Firestore 실시간 동기화 · 칸반 7컬럼(시작 전 추가) · 모달 단계 표 형식 · **계획 vs 실제 일정 비교** · 진척 배지(정상/지연/완료) · 지연 시 자동 색깔 경고
+- v7 (2026-05-19) · 청각 분과 차시 전면 개편 (OT 회의 반영) · 일반 이슈 등록 기능 (차시 무관) · 이슈 인라인 편집 · 정렬 (차시ID/Phase/우선순위)
+- v13 (2026-05-19) · **하이브리드 데이터 소스** · `data.json` 분리 + Firestore 백업 fallback · localStorage 우선 + 변경 hash + quota 보호

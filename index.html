@@ -649,6 +649,30 @@ function loadFromLocal() {
   return false;
 }
 
+// data.json fetch — GitHub Pages의 baseline 데이터
+async function loadFromDataJson() {
+  try {
+    // 캐시 무력화 + no-store
+    const resp = await fetch('./data.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!resp.ok) return false;
+    const parsed = await resp.json();
+    if (!parsed.lessons || parsed.lessons.length === 0) return false;
+    if (parsed.version !== SEED.version) return false; // 버전 mismatch는 무시
+    // 로컬보다 data.json이 더 최신이면 적용 (다른 사람이 push한 변경분 받기)
+    const localUpdated = data && data.updated ? data.updated : '';
+    const remoteUpdated = parsed.updated || '';
+    if (!localUpdated || remoteUpdated > localUpdated) {
+      data = parsed;
+      lastSavedHash = dataHash(data);
+      saveLocal();
+      return true;
+    }
+  } catch(e) {
+    console.warn('data.json fetch 실패:', e.message);
+  }
+  return false;
+}
+
 function updateStatusLabel() {
   const u = data.updated ? new Date(data.updated).toLocaleString('ko-KR') : '—';
   const el = document.getElementById('updated');
@@ -1486,12 +1510,25 @@ loadFromLocal();
 document.getElementById('updated').textContent = '연결 중... ⏳';
 render();
 
+// data.json 백그라운드 fetch — 로컬보다 최신이면 자동 갱신
+loadFromDataJson().then(updated => {
+  if (updated) {
+    updateStatusLabel();
+    if (currentLessonId) openModal(currentLessonId);
+    else render();
+  }
+});
+
 // ============== Firestore 실시간 동기화 ==============
 function startFirestore() {
   if (!window.fbOnSnap) return;
   window.fbOnSnap(async (snap) => {
     if (!snap.exists()) {
-      if (!loadFromLocal()) data = JSON.parse(JSON.stringify(SEED));
+      // 빈 컬렉션 — 로컬 → data.json → SEED 순으로 시도
+      if (!loadFromLocal()) {
+        const gotJson = await loadFromDataJson();
+        if (!gotJson) data = JSON.parse(JSON.stringify(SEED));
+      }
       try { await window.fbSetDoc(data); lastSavedHash = dataHash(data); } catch(e) {}
       return;
     }
