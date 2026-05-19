@@ -250,6 +250,30 @@ href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/prete
   .issue-mini.medium{border-left-color:#cc7700}
   .issue-mini.low{border-left-color:var(--action-blue)}
   .issue-mini.closed{opacity:0.5}
+  /* 일반 이슈 (차시 무관) 추가 폼 */
+  .general-issue-add{background:#fff;border:1px dashed var(--silver-teal);border-radius:16px;padding:18px 20px;margin-bottom:16px;box-shadow:var(--shadow-subtle)}
+  .general-issue-add .gi-head{font-family:'Source Code Pro',monospace;font-size:12px;font-weight:600;letter-spacing:1.5px;color:var(--forest);margin-bottom:12px;text-transform:uppercase}
+  .general-issue-add .gi-sub{font-size:10px;color:var(--cool-gray);font-weight:400;letter-spacing:0.5px;text-transform:none;margin-left:8px}
+  .general-issue-add .gi-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .general-issue-add .gi-row:last-child{margin-bottom:0}
+  .general-issue-add input,.general-issue-add select{border:1px solid var(--silver-teal);padding:8px 12px;font-size:13px;border-radius:8px;font-family:inherit;background:#fff;flex:1;min-width:140px}
+  .general-issue-add input:focus,.general-issue-add select:focus{outline:none;border-color:var(--dark-green);box-shadow:0 0 0 2px rgba(0,104,74,0.1)}
+  .general-issue-add .btn{flex:0 0 auto}
+  /* 일반 이슈 아이템 */
+  .issue-item.general{border-left-color:#8b5cf6;background:linear-gradient(90deg,rgba(139,92,246,0.05) 0%,#fff 12%);cursor:default}
+  .issue-item.general:hover{transform:none}
+  .ii-lesson.general{background:#8b5cf6}
+  .ii-gi-actions{margin-left:auto;display:inline-flex;gap:4px}
+  .ii-gi-actions button{padding:4px 8px;border-radius:6px;font-size:14px;background:transparent;border:1px solid transparent;cursor:pointer}
+  .ii-gi-actions button:hover{background:var(--bg-light);border-color:var(--silver-teal)}
+  /* 일반 이슈 인라인 편집 */
+  .issue-item.editing{background:#fff;border:1px solid var(--dark-green);box-shadow:var(--shadow-card);cursor:default}
+  .issue-item.editing .ii-edit-form{display:flex;flex-direction:column;gap:8px;width:100%}
+  .issue-item.editing input,.issue-item.editing select{border:1px solid var(--silver-teal);padding:8px 12px;font-size:13px;border-radius:8px;font-family:inherit;background:#fff;width:100%}
+  .issue-item.editing input:focus,.issue-item.editing select:focus{outline:none;border-color:var(--dark-green);box-shadow:0 0 0 2px rgba(0,104,74,0.1)}
+  .issue-item.editing .ii-edit-actions{display:flex;gap:6px;justify-content:flex-end}
+  .issue-item.editing .ii-edit-actions button{padding:6px 14px;border:1px solid var(--silver-teal);border-radius:8px;background:#fff;font-size:13px;cursor:pointer}
+  .issue-item.editing .ii-edit-actions button:first-child{background:var(--forest);color:var(--mg-green);border-color:var(--forest)}
   .issue-mini.editing{background:#fff;border:1px solid var(--dark-green);box-shadow:var(--shadow-card);align-items:stretch}
   .issue-mini.editing input,.issue-mini.editing select{border:1px solid var(--silver-teal);padding:7px 10px;font-size:13px;border-radius:6px;font-family:inherit;background:#fff;width:100%}
   .issue-mini.editing input:focus,.issue-mini.editing select:focus{outline:none;border-color:var(--dark-green);box-shadow:0 0 0 2px rgba(0,104,74,0.1)}
@@ -367,8 +391,9 @@ href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/prete
 <script>
 // ============== 시드 데이터 ==============
 const SEED = {
-  version: 6,
+  version: 7,
   updated: '2026-05-19',
+  globalIssues: [],
   milestones: [
     { id:'M1', name:'프로토타입 시연 (1박2일)', date:'2026-07-10 ~ 07-11', flag:'7월 초', notes:'9차시 알파 시연·발주처·전문가 9인 피드백' },
     { id:'M2', name:'현장 적합성 검토', date:'2026-08-03 ~ 08-14', flag:'8월 초', notes:'9차시로 장애 학습자 현장 테스트' },
@@ -916,15 +941,22 @@ function renderKanban() {
 function renderIssues() {
   const all = [];
   data.lessons.forEach(l => l.issues.forEach(i => all.push({...i, lessonId:l.id, lessonName:l.name, lessonPhase:l.phase, lessonType:l.type})));
+  (data.globalIssues||[]).forEach(i => all.push({...i, lessonId:null, lessonName:'', lessonPhase:'', lessonType:''}));
   const f = {
     phase: document.getElementById('filter-phase').value,
     type: document.getElementById('filter-type').value,
     search: document.getElementById('filter-search').value.toLowerCase().trim()
   };
   let filtered = all.filter(i => {
-    if (f.phase && i.lessonPhase !== f.phase) return false;
-    if (f.type && i.lessonType !== f.type) return false;
-    if (f.search && !(i.title.toLowerCase().includes(f.search) || (i.description||'').toLowerCase().includes(f.search) || i.lessonId.toLowerCase().includes(f.search))) return false;
+    // 일반 이슈는 phase/type 필터 무시 (검색은 적용)
+    if (i.lessonId) {
+      if (f.phase && i.lessonPhase !== f.phase) return false;
+      if (f.type && i.lessonType !== f.type) return false;
+    }
+    if (f.search) {
+      const txt = (i.title + ' ' + (i.description||'') + ' ' + (i.lessonId||'') + ' ' + (i.category||'')).toLowerCase();
+      if (!txt.includes(f.search)) return false;
+    }
     return true;
   });
   filtered.sort((a,b) => {
@@ -934,18 +966,70 @@ function renderIssues() {
     return (b.created||'').localeCompare(a.created||'');
   });
   document.getElementById('count').textContent = `${filtered.length} 이슈`;
-  const items = filtered.map(i => `
-    <div class="issue-item ${i.priority} ${i.status==='closed'?'closed':''}" onclick="openModal('${i.lessonId}')">
-      <div class="ii-head">
-        <span class="ii-lesson">${i.lessonId}</span>
-        <span class="ii-prio ${i.priority}">${i.priority}</span>
-        <span class="ii-status ${i.status}">${i.status === 'open' ? '🔴 OPEN' : '✓ CLOSED'}</span>
+
+  // 일반 이슈 추가 form
+  const formHtml = `
+    <div class="general-issue-add">
+      <div class="gi-head">📌 차시와 무관한 일반 이슈 추가 <span class="gi-sub">(주소 미수령 · 계약 · 행정 · 전문가 등)</span></div>
+      <div class="gi-row">
+        <input type="text" id="new-global-title" placeholder="이슈 제목 (예: 권성진 선생님 주소 미수령)" />
+        <input type="text" id="new-global-category" placeholder="카테고리 (예: 행정 · 계약 · 회계)" />
+        <select id="new-global-priority">
+          <option value="high">🔴 High</option>
+          <option value="medium" selected>🟡 Medium</option>
+          <option value="low">🔵 Low</option>
+        </select>
       </div>
-      <div class="ii-title">${i.title}</div>
-      ${i.description ? `<div class="ii-desc">${i.description}</div>` : ''}
-      <div class="ii-meta">생성: ${i.created || '—'}${i.resolved ? ' · 해결: '+i.resolved : ''} · ${i.lessonName}</div>
-    </div>`).join('');
-  document.getElementById('main').innerHTML = items ? `<div class="issue-list">${items}</div>` : `<div style="text-align:center;padding:60px;color:var(--cool-gray);font-family:'Source Code Pro',monospace;letter-spacing:2px;text-transform:uppercase">No Issues</div>`;
+      <div class="gi-row">
+        <input type="text" id="new-global-desc" placeholder="설명 (선택)" />
+        <button class="btn btn-primary" onclick="addGlobalIssue()">+ 추가</button>
+      </div>
+    </div>
+  `;
+
+  const items = filtered.map(i => {
+    const isGeneral = !i.lessonId;
+    // 인라인 편집 모드
+    if (editingIssueId === i.id && isGeneral) {
+      return `
+        <div class="issue-item ${i.priority} editing general">
+          <div class="ii-edit-form">
+            <input type="text" id="edit-title-${i.id}" value="${(i.title||'').replace(/"/g,'&quot;')}" placeholder="제목" />
+            <input type="text" id="edit-category-${i.id}" value="${(i.category||'기타').replace(/"/g,'&quot;')}" placeholder="카테고리" />
+            <select id="edit-priority-${i.id}">
+              <option value="high"   ${i.priority==='high'?'selected':''}>🔴 High</option>
+              <option value="medium" ${i.priority==='medium'?'selected':''}>🟡 Medium</option>
+              <option value="low"    ${i.priority==='low'?'selected':''}>🔵 Low</option>
+            </select>
+            <input type="text" id="edit-desc-${i.id}" value="${(i.description||'').replace(/"/g,'&quot;')}" placeholder="설명" />
+            <div class="ii-edit-actions">
+              <button onclick="saveEditGlobalIssue('${i.id}')">✓ 저장</button>
+              <button onclick="cancelEditIssue()">✕ 취소</button>
+            </div>
+          </div>
+        </div>`;
+    }
+    const labelText = isGeneral ? ('📌 ' + (i.category||'기타')) : i.lessonId;
+    const onclickAttr = isGeneral ? '' : `onclick="openModal('${i.lessonId}')"`;
+    return `
+      <div class="issue-item ${i.priority} ${i.status==='closed'?'closed':''} ${isGeneral?'general':''}" ${onclickAttr}>
+        <div class="ii-head">
+          <span class="ii-lesson ${isGeneral?'general':''}">${labelText}</span>
+          <span class="ii-prio ${i.priority}">${i.priority}</span>
+          <span class="ii-status ${i.status}">${i.status === 'open' ? '🔴 OPEN' : '✓ CLOSED'}</span>
+          ${isGeneral ? `
+            <span class="ii-gi-actions">
+              <button onclick="event.stopPropagation();startEditGlobalIssue('${i.id}')" title="수정">✏️</button>
+              <button onclick="event.stopPropagation();toggleGlobalIssue('${i.id}')" title="${i.status==='open'?'해결':'다시 열기'}">${i.status==='open'?'✓':'↺'}</button>
+              <button onclick="event.stopPropagation();deleteGlobalIssue('${i.id}')" title="삭제">🗑</button>
+            </span>` : ''}
+        </div>
+        <div class="ii-title">${i.title}</div>
+        ${i.description ? `<div class="ii-desc">${i.description}</div>` : ''}
+        <div class="ii-meta">생성: ${i.created || '—'}${i.resolved ? ' · 해결: '+i.resolved : ''}${i.lessonName ? ' · '+i.lessonName : ''}</div>
+      </div>`;
+  }).join('');
+  document.getElementById('main').innerHTML = formHtml + (items ? `<div class="issue-list">${items}</div>` : `<div style="text-align:center;padding:60px;color:var(--cool-gray);font-family:'Source Code Pro',monospace;letter-spacing:2px;text-transform:uppercase">No Issues</div>`);
 }
 function render() {
   renderMilestones();
@@ -1233,6 +1317,58 @@ function saveEditIssue(id) {
   saveData();
   openModal(currentLessonId);
   toast('이슈 수정됨', 'success');
+}
+// 일반 이슈 (차시 무관) 추가/수정/토글/삭제
+function addGlobalIssue() {
+  const title = document.getElementById('new-global-title').value.trim();
+  if (!title) { toast('제목을 입력하세요', 'error'); return; }
+  const desc = document.getElementById('new-global-desc').value.trim();
+  const prio = document.getElementById('new-global-priority').value;
+  const cat = document.getElementById('new-global-category').value.trim() || '기타';
+  if (!data.globalIssues) data.globalIssues = [];
+  data.globalIssues.push({
+    id: 'G-' + Math.random().toString(36).substr(2, 6),
+    title, description: desc, status: 'open',
+    priority: prio, category: cat,
+    created: new Date().toISOString().slice(0,10), resolved: null
+  });
+  saveData();
+  render();
+  toast('일반 이슈 추가됨', 'success');
+}
+function toggleGlobalIssue(id) {
+  const i = (data.globalIssues||[]).find(x => x.id === id);
+  if (!i) return;
+  if (i.status === 'open') { i.status = 'closed'; i.resolved = new Date().toISOString().slice(0,10); }
+  else { i.status = 'open'; i.resolved = null; }
+  saveData(); render();
+}
+function deleteGlobalIssue(id) {
+  if (!confirm('일반 이슈를 삭제하시겠습니까?')) return;
+  data.globalIssues = (data.globalIssues||[]).filter(x => x.id !== id);
+  saveData(); render();
+}
+function startEditGlobalIssue(id) {
+  editingIssueId = id;
+  render();
+}
+function saveEditGlobalIssue(id) {
+  const i = (data.globalIssues||[]).find(x => x.id === id);
+  if (!i) return;
+  const titleEl = document.getElementById('edit-title-' + id);
+  const descEl  = document.getElementById('edit-desc-' + id);
+  const prioEl  = document.getElementById('edit-priority-' + id);
+  const catEl   = document.getElementById('edit-category-' + id);
+  if (!titleEl) return;
+  const title = titleEl.value.trim();
+  if (!title) { toast('제목을 입력하세요', 'error'); return; }
+  i.title = title;
+  i.description = descEl ? descEl.value.trim() : '';
+  if (prioEl) i.priority = prioEl.value;
+  if (catEl)  i.category = catEl.value.trim() || '기타';
+  editingIssueId = null;
+  saveData(); render();
+  toast('일반 이슈 수정됨', 'success');
 }
 function toggleIssue(id) {
   const l = data.lessons.find(x => x.id === currentLessonId);
