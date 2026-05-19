@@ -582,13 +582,38 @@ let currentLessonId = null;
 let _suppressSave = false; // Firestore에서 받은 업데이트는 다시 쓰지 않게
 
 function saveData() {
-  if (_suppressSave) return;
+
+  console.log('saveData 호출됨', _suppressSave);
+
+  if (_suppressSave) {
+    console.warn('저장 차단됨');
+    return;
+  }
+
+  data.updated = new Date().toISOString();
+
+  document.getElementById('updated').textContent =
+    '최종 수정: ' + new Date().toLocaleString('ko-KR');
+
+  if (window.fbSetDoc) {
+
+    console.log('Firestore 저장 시도');
+
+    window.fbSetDoc(data)
+      .then(() => {
+        console.log('Firestore 저장 성공');
+      })
+      .catch(e => {
+        console.error(e);
+        toast('동기화 실패: ' + e.message, 'error');
+      });
+  }
+}
   data.updated = new Date().toISOString();
   document.getElementById('updated').textContent = '최종 수정: ' + new Date().toLocaleString('ko-KR');
   if (window.fbSetDoc) {
     window.fbSetDoc(data).catch(e => toast('동기화 실패: ' + e.message, 'error'));
   }
-}
 
 // ============== Helpers ==============
 function phaseClass(phase) {
