@@ -143,50 +143,46 @@ href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/prete
   .badge-issue.ok{background:rgba(0,237,100,0.15);color:var(--dark-green)}
   .badge-video{background:var(--bg-light);color:var(--cool-gray);padding:3px 10px;border-radius:100px;font-size:11px;font-family:'Source Code Pro',monospace;letter-spacing:0.5px;font-weight:500}
 
-  /* ===== GANTT (간트 차트 캘린더) ===== */
+  /* ===== GANTT 차트 ===== */
   .gantt-wrap{background:#fff;border:1px solid var(--silver-teal);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-subtle)}
-  .gantt-legend{display:flex;gap:16px;padding:12px 20px;border-bottom:1px solid var(--silver-teal);background:var(--bg-light);font-family:'Source Code Pro',monospace;font-size:11px;color:var(--cool-gray);letter-spacing:0.5px;flex-wrap:wrap;align-items:center}
-  .gantt-legend span{display:inline-flex;align-items:center;gap:6px}
+  .gantt-legend{display:flex;flex-direction:column;gap:6px;padding:12px 18px;border-bottom:1px solid var(--silver-teal);background:var(--bg-light)}
+  .gantt-legend .lg-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-family:'Source Code Pro',monospace;font-size:11px;color:var(--cool-gray);letter-spacing:0.5px}
+  .gantt-legend .lg-row span{display:inline-flex;align-items:center;gap:5px}
+  .gantt-legend .lg-title{font-weight:600;color:var(--forest);text-transform:uppercase;letter-spacing:1.2px;font-size:10px;min-width:42px}
+  .gantt-legend .lg-stage{font-weight:500}
   .lg-box{display:inline-block;width:14px;height:10px;border-radius:3px}
-  .lg-plan{background:var(--silver-teal);opacity:0.6}
-  .lg-actual-on{background:var(--mg-green)}
-  .lg-actual-delayed{background:#cd2c2c}
-  .lg-actual-done{background:var(--forest)}
+  .lg-plan-box{background:transparent;border:1.5px solid var(--cool-gray);opacity:0.7}
+  .lg-progress-box{background-image:repeating-linear-gradient(45deg,#0891b2,#0891b2 3px,#fff 3px,#fff 6px);border:1px solid #0891b2}
   .lg-line{display:inline-block;width:2px;height:14px}
-  .lg-today{background:#cd2c2c}
-  .lg-ms{background:var(--mg-green)}
-  .gantt-scroll{max-height:calc(100vh - 360px);overflow:auto;position:relative}
-  .gantt-header-row{display:flex;position:sticky;top:0;z-index:5;background:var(--forest)}
-  .gantt-spacer{flex:0 0 130px;padding:10px 14px;font-family:'Source Code Pro',monospace;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--mg-green);border-right:1px solid var(--teal-gray)}
+  .lg-today-line{background:#cd2c2c}
+  .lg-ms-line{background:#10b981;border-left:2px dashed #10b981;width:0}
+  .gantt-scroll{max-height:calc(100vh - 340px);overflow:auto;position:relative}
+  .gantt-header-row{display:flex;position:sticky;top:0;z-index:10;background:var(--forest);height:38px}
+  .gantt-spacer{flex:0 0 170px;padding:10px 14px;font-family:'Source Code Pro',monospace;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--mg-green);border-right:1px solid var(--teal-gray);background:var(--forest);position:sticky;left:0;z-index:11;display:flex;align-items:center;box-sizing:border-box}
   .gantt-scale{flex:0 0 auto;position:relative;height:38px;background:var(--deep-teal);color:var(--mg-green)}
-  .gantt-month{position:absolute;top:0;bottom:0;display:flex;align-items:center;padding-left:8px;font-family:'Source Code Pro',monospace;font-size:11px;font-weight:600;letter-spacing:1px;border-right:1px solid var(--teal-gray);color:var(--mg-green)}
+  .gantt-month{position:absolute;top:0;bottom:0;display:flex;align-items:center;padding-left:8px;font-family:'Source Code Pro',monospace;font-size:11px;font-weight:600;letter-spacing:1px;border-right:1px solid var(--teal-gray);color:var(--mg-green);box-sizing:border-box}
   .gantt-body{position:relative;background:#fff}
-  .gantt-row{display:flex;height:34px;border-bottom:1px solid var(--bg-light);align-items:center;cursor:pointer;transition:background 0.12s;position:relative;z-index:1}
-  .gantt-row:hover{background:var(--bg-light)}
-  .gantt-label{position:sticky;left:0;background:#fff;flex:0 0 130px;padding:0 12px;border-right:1px solid var(--silver-teal);z-index:2;display:flex;align-items:center;gap:6px;overflow:hidden}
-  .gantt-row:hover .gantt-label{background:var(--bg-light)}
-  .gantt-label .gantt-id{font-family:'Source Code Pro',monospace;font-size:10px;font-weight:600;color:var(--forest);letter-spacing:0.5px;white-space:nowrap;flex-shrink:0}
-  .gantt-label .gantt-name{font-size:10px;color:var(--cool-gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:none}
+  .gantt-row{display:flex;height:38px;border-bottom:1px solid var(--bg-light);align-items:center;cursor:pointer;transition:background 0.12s;position:relative;z-index:1}
+  .gantt-row:hover{background:rgba(0,237,100,0.04)}
+  .gantt-row:hover .gantt-label{background:rgba(0,237,100,0.04)}
+  .gantt-label{position:sticky;left:0;background:#fff;flex:0 0 170px;padding:0 12px;border-right:1px solid var(--silver-teal);z-index:2;display:flex;align-items:center;gap:6px;overflow:hidden;box-sizing:border-box;height:100%}
+  .gantt-label .gantt-id{font-family:'Source Code Pro',monospace;font-size:11px;font-weight:600;color:var(--forest);letter-spacing:0.5px;white-space:nowrap}
   .gantt-label.p1 .gantt-id{color:var(--dark-green)}
   .gantt-label.p2 .gantt-id{color:var(--action-blue)}
+  .gantt-issue{font-size:9px;background:#fdedeb;color:#cd2c2c;padding:1px 6px;border-radius:8px;margin-left:auto;font-family:'Source Code Pro',monospace;font-weight:600;letter-spacing:0.5px;white-space:nowrap}
   .gantt-track{position:relative;height:100%;flex:1}
-  .gantt-bar{position:absolute;border-radius:4px;transition:all 0.15s;pointer-events:auto}
-  .gantt-bar:hover{filter:brightness(0.92)}
-  .gantt-bar-plan{top:6px;height:10px;background:var(--silver-teal);opacity:0.55}
-  .gantt-bar-plan.p1{background:rgba(0,237,100,0.4)}
-  .gantt-bar-plan.p2{background:rgba(0,108,250,0.3)}
-  .gantt-bar-actual{top:18px;height:10px;background:var(--mg-green);box-shadow:0 1px 3px rgba(0,0,0,0.12)}
-  .gantt-bar-actual.delayed{background:#cd2c2c}
-  .gantt-bar-actual.done-late{background:#cc7700}
-  .gantt-bar-actual.done,.gantt-bar-actual.done-on-time{background:var(--forest)}
-  .gantt-bar-actual.done-early{background:var(--action-blue)}
-  .gantt-bar-actual.not-started{background:var(--silver-teal)}
-  .gantt-overlay{position:absolute;top:0;bottom:0;pointer-events:none}
+  .gantt-stage-plan{position:absolute;top:8px;height:22px;border:1.5px solid;border-radius:5px;opacity:0.85;box-sizing:border-box;z-index:1}
+  .gantt-stage-bar{position:absolute;top:12px;height:14px;border-radius:4px;z-index:3;box-shadow:0 1px 2px rgba(0,0,0,0.18)}
+  .gantt-stage-bar.done{}
+  .gantt-stage-bar.done.late{outline:1.5px solid #cd2c2c;outline-offset:1px}
+  .gantt-stage-bar.in-progress{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,0) 0,rgba(255,255,255,0) 4px,rgba(255,255,255,0.45) 4px,rgba(255,255,255,0.45) 8px)}
+  .gantt-stage-bar.delayed{background:#cd2c2c !important}
+  .gantt-overlay{position:absolute;top:0;bottom:0;pointer-events:none;z-index:4}
   .gantt-week{position:absolute;top:0;bottom:0;width:1px;background:var(--silver-teal);opacity:0.25}
-  .gantt-today{position:absolute;top:0;bottom:0;width:2px;background:#cd2c2c;z-index:4;box-shadow:0 0 6px rgba(205,44,44,0.4)}
+  .gantt-today{position:absolute;top:0;bottom:0;width:2px;background:#cd2c2c;z-index:6;box-shadow:0 0 6px rgba(205,44,44,0.4)}
   .gantt-today-label{position:absolute;top:4px;left:-26px;background:#cd2c2c;color:#fff;font-family:'Source Code Pro',monospace;font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;letter-spacing:1.2px;white-space:nowrap}
-  .gantt-ms{position:absolute;top:0;bottom:0;border-left:1.5px dashed var(--mg-green);z-index:3}
-  .gantt-ms-label{position:absolute;top:4px;left:4px;background:var(--forest);color:var(--mg-green);font-family:'Source Code Pro',monospace;font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;letter-spacing:1px;white-space:nowrap;border:1px solid var(--mg-green)}
+  .gantt-ms{position:absolute;top:0;bottom:0;border-left:1.5px dashed #10b981;z-index:5}
+  .gantt-ms-label{position:absolute;top:4px;left:4px;background:var(--forest);color:#34d399;font-family:'Source Code Pro',monospace;font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;letter-spacing:1px;white-space:nowrap;border:1px solid #34d399}
 
   /* ===== TABLE ===== */
   table.wbs{width:100%;border-collapse:separate;border-spacing:0;background:#fff;font-size:13px;border:1px solid var(--silver-teal);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-subtle)}
@@ -379,7 +375,7 @@ href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/prete
 <div class="filterbar">
   <div class="filterbar-inner">
     <div class="view-tabs">
-      <button class="active" data-view="gantt">📅 캘린더</button>
+      <button class="active" data-view="gantt">📊 간트</button>
       <button data-view="table">테이블</button>
       <button data-view="kanban">칸반</button>
       <button data-view="issues">이슈</button>
@@ -1102,15 +1098,15 @@ function renderIssues() {
 }
 function renderGantt() {
   const filtered = getFiltered();
-  document.getElementById('count').textContent = `${filtered.length} / ${data.lessons.length} 차시 · 📅 간트`;
+  document.getElementById('count').textContent = `${filtered.length} / ${data.lessons.length} 차시 · 📊 간트`;
 
-  // 시간 범위: 2026-05-15 ~ 2026-12-15 (약 7개월)
-  const GANTT_START = new Date('2026-05-15');
+  const GANTT_START = new Date('2026-05-01');
   const GANTT_END = new Date('2026-12-15');
-  const DAY_PX = 8; // 1일 = 8px → 전체 약 1700px
+  const DAY_PX = 7;
   const totalDays = Math.round((GANTT_END - GANTT_START) / 86400000);
   const totalWidth = totalDays * DAY_PX;
-  const LABEL_W = 130;
+  const LABEL_W = 170;
+  const today = todayISO();
 
   function dateToX(d) {
     if (!d) return null;
@@ -1118,103 +1114,128 @@ function renderGantt() {
     return Math.round(days * DAY_PX);
   }
 
-  // 월별 헤더
+  const STAGES = [
+    { key: 'plan',   label: '기획',   color: '#7c3aed', light: 'rgba(124,58,237,0.18)' },
+    { key: 'design', label: '디자인', color: '#ec4899', light: 'rgba(236,72,153,0.18)' },
+    { key: 'dev',    label: '개발',   color: '#2563eb', light: 'rgba(37,99,235,0.18)' },
+    { key: 'video',  label: '영상',   color: '#f59e0b', light: 'rgba(245,158,11,0.22)' },
+    { key: 'qa',     label: '검수',   color: '#0891b2', light: 'rgba(8,145,178,0.18)' }
+  ];
+
+  function getStageData(l, key) {
+    if (key === 'design') {
+      const ui = l.stages.ui, art = l.stages.art;
+      const starts = [ui.start, art.start].filter(Boolean).sort();
+      const ends = [ui.end, art.end].filter(Boolean).sort();
+      const aStarts = [ui.actualStart, art.actualStart].filter(Boolean).sort();
+      const aEnds = [ui.actualEnd, art.actualEnd].filter(Boolean).sort();
+      const sts = [ui.status, art.status];
+      let status = 'todo';
+      if (sts.every(s => s === 'done')) status = 'done';
+      else if (sts.some(s => s === 'in-progress' || s === 'done')) status = 'in-progress';
+      return { start: starts[0]||null, end: ends[ends.length-1]||null,
+               actualStart: aStarts[0]||null, actualEnd: aEnds[aEnds.length-1]||null, status };
+    }
+    const s = l.stages[key];
+    return { start: s.start||null, end: s.end||null, actualStart: s.actualStart||null, actualEnd: s.actualEnd||null, status: s.status };
+  }
+
   const months = [];
   for (let m = 5; m <= 12; m++) {
     const monthStart = new Date(2026, m-1, 1);
-    const nextMonth = new Date(2026, m, 1);
     if (monthStart >= GANTT_END) break;
+    const nextMonth = new Date(2026, m, 1);
     const x = dateToX(monthStart.toISOString().slice(0,10));
     const xNext = Math.min(dateToX(nextMonth.toISOString().slice(0,10)) || totalWidth, totalWidth);
-    months.push({ label: `${m}월`, x: Math.max(0, x), width: xNext - Math.max(0, x) });
+    months.push({ label: m+'월', x: Math.max(0, x), width: xNext - Math.max(0, x) });
   }
-  // 주 단위 세로 격자 (월요일마다)
+
   const weekLines = [];
   for (let d = new Date(GANTT_START); d <= GANTT_END; d.setDate(d.getDate()+1)) {
-    if (d.getDay() === 1) { // 월요일
+    if (d.getDay() === 1) {
       const x = dateToX(d.toISOString().slice(0,10));
       if (x >= 0) weekLines.push(x);
     }
   }
   const weekLinesHtml = weekLines.map(x => `<div class="gantt-week" style="left:${x}px"></div>`).join('');
 
-  // 마일스톤 세로선
-  const msLines = data.milestones.map(m => {
-    const d = (m.date || '').split('~')[0].trim();
+  const msLines = data.milestones.map(ms => {
+    const d = (ms.date || '').split('~')[0].trim();
     if (!d) return '';
     const x = dateToX(d);
     if (x === null || x < 0 || x > totalWidth) return '';
-    return `<div class="gantt-ms" style="left:${x}px" title="${m.flag}: ${m.name}"><span class="gantt-ms-label">${m.flag}</span></div>`;
+    return `<div class="gantt-ms" style="left:${x}px"><span class="gantt-ms-label">${ms.flag}</span></div>`;
   }).join('');
 
-  // 오늘 위치
-  const todayX = dateToX(todayISO());
+  const todayX = dateToX(today);
   const todayLine = (todayX !== null && todayX >= 0 && todayX <= totalWidth)
     ? `<div class="gantt-today" style="left:${todayX}px"><span class="gantt-today-label">TODAY</span></div>`
     : '';
 
-  // 각 차시 행
-  const stages = ['plan','ui','art','dev','video','qa'];
   const rows = filtered.map(l => {
-    const allStarts = stages.map(k => l.stages[k].start).filter(Boolean).sort();
-    const allEnds = stages.map(k => l.stages[k].end).filter(Boolean).sort();
-    const actStarts = stages.map(k => l.stages[k].actualStart).filter(Boolean).sort();
-    const actEnds = stages.map(k => l.stages[k].actualEnd).filter(Boolean).sort();
-
-    const planStart = allStarts[0];
-    const planEnd = allEnds[allEnds.length-1];
-    const actStart = actStarts[0];
-    const actEnd = actEnds[actEnds.length-1];
-
-    const ls = getLessonScheduleStatus(l);
     const phaseCls = phaseClass(l.phase);
     const urgency = l.urgency || 'medium';
-    const msReceived = l.manuscript && l.manuscript.received;
+    const openIssues = l.issues.filter(i => i.status === 'open').length;
 
-    // 계획 막대
-    let planBar = '';
-    if (planStart && planEnd) {
-      const x = dateToX(planStart);
-      const w = Math.max(DAY_PX, dateToX(planEnd) - x + DAY_PX);
-      planBar = `<div class="gantt-bar gantt-bar-plan ${phaseCls}" style="left:${x}px;width:${w}px" title="계획: ${planStart} ~ ${planEnd}"></div>`;
-    }
-    // 실제 막대 (있을 때만)
-    let actBar = '';
-    if (actStart) {
-      const x = dateToX(actStart);
-      const endDate = actEnd || todayISO();
-      const w = Math.max(DAY_PX/2, dateToX(endDate) - x + (actEnd ? DAY_PX : 0));
-      actBar = `<div class="gantt-bar gantt-bar-actual ${ls.state}" style="left:${x}px;width:${w}px" title="실제: ${actStart} ~ ${actEnd||'진행 중'}"></div>`;
-    }
+    const bars = STAGES.map(stg => {
+      const sd = getStageData(l, stg.key);
+      if (!sd.start || !sd.end) return '';
+      const planX = dateToX(sd.start);
+      const planEndX = dateToX(sd.end);
+      const planW = Math.max(DAY_PX, planEndX - planX + DAY_PX);
+      const planBar = `<div class="gantt-stage-plan" style="left:${planX}px;width:${planW}px;background:${stg.light};border-color:${stg.color}" title="${stg.label} 계획: ${sd.start} ~ ${sd.end}"></div>`;
+      let actBar = '';
+      if (sd.status === 'done' && sd.actualStart) {
+        const ax = dateToX(sd.actualStart);
+        const aEndDate = sd.actualEnd || sd.end;
+        const aw = Math.max(DAY_PX, dateToX(aEndDate) - ax + DAY_PX);
+        const lateCls = (sd.actualEnd && sd.actualEnd > sd.end) ? ' late' : '';
+        actBar = `<div class="gantt-stage-bar done${lateCls}" style="left:${ax}px;width:${aw}px;background:${stg.color}" title="${stg.label} 완료: ${sd.actualStart} ~ ${sd.actualEnd||'—'}"></div>`;
+      } else if (sd.status === 'in-progress') {
+        const ax = sd.actualStart ? dateToX(sd.actualStart) : planX;
+        const endDate = today < sd.end ? today : sd.end;
+        const aw = Math.max(DAY_PX, dateToX(endDate) - ax + DAY_PX);
+        actBar = `<div class="gantt-stage-bar in-progress" style="left:${ax}px;width:${aw}px;background:${stg.color}" title="${stg.label} 진행 중 (${sd.actualStart || '시작일 미입력'})"></div>`;
+      } else if (sd.status === 'todo' && today > sd.start) {
+        const endX = Math.min(dateToX(today), planEndX);
+        const aw = Math.max(DAY_PX, endX - planX + DAY_PX);
+        actBar = `<div class="gantt-stage-bar delayed" style="left:${planX}px;width:${aw}px" title="${stg.label} 지연 — ${sd.start} 시작 예정인데 미시작"></div>`;
+      }
+      return planBar + actBar;
+    }).join('');
 
     return `
       <div class="gantt-row" data-lesson-id="${l.id}" onclick="openModal('${l.id}')">
         <div class="gantt-label ${phaseCls}">
           <span class="urgency-dot ${urgency}"></span>
           <span class="gantt-id">${l.id}</span>
-          <span class="gantt-name">${l.name}</span>
+          ${openIssues > 0 ? `<span class="gantt-issue" title="미해결 이슈 ${openIssues}건">🚨${openIssues}</span>` : ''}
         </div>
-        <div class="gantt-track">
-          ${planBar}
-          ${actBar}
-        </div>
+        <div class="gantt-track">${bars}</div>
       </div>`;
   }).join('');
 
-  // 월 헤더
   const monthHeader = months.map(m =>
     `<div class="gantt-month" style="left:${m.x}px;width:${m.width}px">${m.label}</div>`
+  ).join('');
+
+  const stageLegend = STAGES.map(s =>
+    `<span class="lg-stage"><span class="lg-box" style="background:${s.color}"></span>${s.label}</span>`
   ).join('');
 
   document.getElementById('main').innerHTML = `
     <div class="gantt-wrap">
       <div class="gantt-legend">
-        <span><span class="lg-box lg-plan"></span> 계획</span>
-        <span><span class="lg-box lg-actual-on"></span> 정상 진행</span>
-        <span><span class="lg-box lg-actual-delayed"></span> 지연</span>
-        <span><span class="lg-box lg-actual-done"></span> 완료</span>
-        <span><span class="lg-line lg-today"></span> 오늘</span>
-        <span><span class="lg-line lg-ms"></span> 마일스톤</span>
+        <div class="lg-row"><span class="lg-title">단계</span>${stageLegend}</div>
+        <div class="lg-row">
+          <span class="lg-title">상태</span>
+          <span><span class="lg-box lg-plan-box"></span> 계획</span>
+          <span><span class="lg-box lg-progress-box"></span> 진행 중</span>
+          <span><span class="lg-box" style="background:#0891b2"></span> 완료</span>
+          <span><span class="lg-box" style="background:#cd2c2c"></span> 지연/미시작</span>
+          <span><span class="lg-line lg-today-line"></span> 오늘</span>
+          <span><span class="lg-line lg-ms-line"></span> 마일스톤</span>
+        </div>
       </div>
       <div class="gantt-scroll">
         <div class="gantt-header-row" style="width:${totalWidth + LABEL_W}px">
