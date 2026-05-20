@@ -103,6 +103,15 @@ href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/prete
   .filterbar input[type=search]{min-width:220px}
   .filterbar select:focus,.filterbar input:focus{outline:none;border-color:var(--dark-green);box-shadow:0 0 0 3px rgba(0,104,74,0.1)}
   .filter-count{margin-left:auto;font-family:'Source Code Pro',monospace;font-size:11px;font-weight:600;color:var(--cool-gray);letter-spacing:1px}
+  /* Phase 다중 토글 */
+  .phase-toggles{display:inline-flex;gap:4px;background:var(--bg-light);padding:3px;border-radius:100px;border:1px solid var(--silver-teal)}
+  .phase-tg{font-family:inherit;font-size:12px;font-weight:500;padding:6px 12px;border-radius:100px;border:none;background:transparent;color:var(--cool-gray);cursor:pointer;transition:all 0.12s;letter-spacing:0.3px}
+  .phase-tg:hover{background:rgba(0,237,100,0.1);color:var(--dark-green)}
+  .phase-tg.active{background:var(--forest);color:var(--mg-green);font-weight:600;box-shadow:var(--shadow-subtle)}
+  /* 다중 정렬 그룹 */
+  .sort-group{display:inline-flex;gap:4px;align-items:center}
+  .sort-group select{border:1px solid var(--silver-teal);padding:8px 10px;font-size:12px;border-radius:8px;font-family:inherit;background:#fff;color:#000;min-width:140px}
+  .sort-group select:focus{outline:none;border-color:var(--dark-green);box-shadow:0 0 0 3px rgba(0,104,74,0.1)}
 
   /* ===== MAIN ===== */
   main{padding:24px 40px 60px;max-width:1600px;margin:0 auto}
@@ -137,6 +146,17 @@ href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/prete
   .lc-stage.in-progress.is-delayed{background:#cd2c2c}
   .lc-stage.done.is-delayed{background:#cc7700}
   .lc-stage-labels{display:flex;gap:3px;font-family:'Source Code Pro',monospace;font-size:9px;letter-spacing:0.5px;color:var(--cool-gray);text-align:center;text-transform:uppercase;font-weight:500}
+  .lc-stage-tag{font-family:'Source Code Pro',monospace;font-size:10px;font-weight:500;letter-spacing:1px;color:var(--dark-green);background:rgba(0,237,100,0.08);padding:1px 8px;border-radius:100px;margin-left:4px;text-transform:uppercase}
+  .stage-card{position:relative}
+  .stage-card.is-pending{opacity:0.55;border-style:dashed}
+  .stage-card.is-pending .lc-stage-tag{background:var(--bg-light);color:var(--cool-gray)}
+  .card-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px;z-index:2}
+  .ca-btn{width:22px;height:22px;border-radius:100px;border:1px solid var(--silver-teal);background:#fff;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;color:var(--cool-gray);transition:all 0.12s;box-shadow:var(--shadow-subtle)}
+  .ca-btn:hover{transform:scale(1.1)}
+  .ca-done{color:var(--dark-green);border-color:var(--mg-green)}
+  .ca-done:hover{background:var(--mg-green);color:var(--forest)}
+  .ca-back{color:var(--cool-gray)}
+  .ca-back:hover{background:var(--bg-light);color:#cd2c2c;border-color:#cd2c2c}
   .lc-stage-labels span{flex:1}
   .lc-footer{display:flex;gap:8px;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--bg-light);font-size:12px;color:var(--cool-gray)}
   .badge-issue{background:#fdedeb;color:#cd2c2c;padding:3px 10px;border-radius:100px;font-weight:600;font-size:11px;font-family:'Source Code Pro',monospace;letter-spacing:0.5px}
@@ -385,30 +405,24 @@ href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/prete
       <button data-view="kanban">칸반</button>
       <button data-view="issues">이슈</button>
     </div>
-    <select id="filter-phase">
-      <option value="">전체 Phase</option>
-      <option selected>Phase 1</option><option>Phase 2</option><option>Phase 3</option>
-    </select>
-    <select id="filter-type">
-      <option value="">전체 유형</option>
-      <option>시각</option><option>청각</option><option>뇌병변</option>
-    </select>
-    <select id="filter-urgency">
-      <option value="">전체 우선순위</option>
-      <option value="high">🔴 High</option>
-      <option value="medium">🟡 Medium</option>
-      <option value="low">🔵 Low</option>
-    </select>
-    <select id="filter-manuscript">
-      <option value="">원고 전체</option>
-      <option value="pending">📄 원고 대기</option>
-      <option value="received">📄 원고 수령</option>
-    </select>
-    <select id="filter-sort">
-      <option value="id">↕ 차시ID 순</option>
-      <option value="phase">↕ Phase 순</option>
-      <option value="urgency">↕ 우선순위 순</option>
-    </select>
+    <div class="phase-toggles" id="filter-phase-group">
+      <button type="button" class="phase-tg active" data-phase="Phase 1">Phase 1</button>
+      <button type="button" class="phase-tg" data-phase="Phase 2">Phase 2</button>
+      <button type="button" class="phase-tg" data-phase="Phase 3">Phase 3</button>
+    </div>
+    <div class="sort-group">
+      <select id="filter-sort1" title="1차 정렬 기준">
+        <option value="id">↕ 1차: 차시ID</option>
+        <option value="phase">↕ 1차: Phase</option>
+        <option value="urgency">↕ 1차: 우선순위</option>
+      </select>
+      <select id="filter-sort2" title="2차 정렬 기준">
+        <option value="">2차 정렬 없음</option>
+        <option value="id">↕ 2차: 차시ID</option>
+        <option value="phase">↕ 2차: Phase</option>
+        <option value="urgency">↕ 2차: 우선순위</option>
+      </select>
+    </div>
     <select id="filter-issue">
       <option value="">이슈 전체</option>
       <option value="open">미해결 이슈</option>
@@ -516,17 +530,74 @@ const phase1_1 = {'뇌병변 1-3':1,'시각 1-3':1,'청각 1-1':1,'청각 2-1':1
 const phase1_2 = {'시각 2-6':1,'시각 3-6':1,'뇌병변 2-4':1,'뇌병변 3-5':1};
 const phase2_set = new Set(['시각 1-1','시각 1-2','시각 2-1','시각 2-2','시각 2-3','시각 2-4','시각 2-5','청각 1-2','청각 1-3','청각 1-4','청각 1-5','청각 1-6','청각 2-2','청각 2-3','뇌병변 1-1','뇌병변 1-2','뇌병변 1-4','뇌병변 1-5','뇌병변 1-6','뇌병변 1-7','뇌병변 2-1']);
 
-const KANBAN_COLS = ['todo','plan','design','dev','video','qa','done'];
-const KANBAN_LABELS = { todo:'시작 전', plan:'기획', design:'디자인', dev:'개발', video:'영상', qa:'검수중', done:'완료' };
-const STAGE_RULES = {
-  todo:   { plan:'todo',        ui:'todo',        art:'todo',        dev:'todo',        video:'todo',        qa:'todo' },
-  plan:   { plan:'in-progress', ui:'todo',        art:'todo',        dev:'todo',        video:'todo',        qa:'todo' },
-  design: { plan:'done',        ui:'in-progress', art:'in-progress', dev:'todo',        video:'todo',        qa:'todo' },
-  dev:    { plan:'done',        ui:'done',        art:'done',        dev:'in-progress', video:'todo',        qa:'todo' },
-  video:  { plan:'done',        ui:'done',        art:'done',        dev:'done',        video:'in-progress', qa:'todo' },
-  qa:     { plan:'done',        ui:'done',        art:'done',        dev:'done',        video:'done',        qa:'in-progress' },
-  done:   { plan:'done',        ui:'done',        art:'done',        dev:'done',        video:'done',        qa:'done' }
-};
+const KANBAN_COLS = ['todo','plan','design','video','dev','qa','done'];
+const KANBAN_LABELS = { todo:'시작 전', plan:'기획', design:'디자인', video:'영상', dev:'개발', qa:'검수', done:'완료' };
+const STAGE_TO_COL = { plan:'plan', ui:'design', art:'design', video:'video', dev:'dev', qa:'qa' };
+const COL_TO_STAGES = { plan:['plan'], design:['ui','art'], video:['video'], dev:['dev'], qa:['qa'] };
+const COL_LABELS_SHORT = { plan:'기획', design:'디자인', video:'영상', dev:'개발', qa:'검수' };
+
+// 차시 → 카드 배열 (단계 카드 모델)
+function getKanbanCards(l) {
+  const order = ['plan','ui','art','video','dev','qa'];
+  const inProg = order.filter(s => l.stages[s].status === 'in-progress');
+  const allDone = order.every(s => l.stages[s].status === 'done');
+  const allTodo = order.every(s => l.stages[s].status === 'todo');
+  if (allDone) return [{ col:'done', stageKeys: order, lesson: l }];
+  if (allTodo) return [{ col:'todo', stageKeys: [], lesson: l }];
+  const cards = [];
+  if (inProg.length > 0) {
+    const seen = new Set();
+    inProg.forEach(s => {
+      const col = STAGE_TO_COL[s];
+      if (seen.has(col)) return;
+      seen.add(col);
+      const stageKeys = COL_TO_STAGES[col].filter(k => l.stages[k].status === 'in-progress');
+      cards.push({ col, stageKeys, lesson: l });
+    });
+  } else {
+    // 일부 done + 일부 todo, in-progress 없음 → 다음 시작 단계
+    const nextTodo = order.find(s => l.stages[s].status === 'todo');
+    if (nextTodo) {
+      const col = STAGE_TO_COL[nextTodo];
+      const stageKeys = COL_TO_STAGES[col].filter(k => l.stages[k].status === 'todo');
+      cards.push({ col, stageKeys, lesson: l, pending: true });
+    } else {
+      cards.push({ col:'todo', stageKeys: [], lesson: l });
+    }
+  }
+  return cards;
+}
+
+// 단계 완료 / 시작 전 복귀
+function completeStage(lessonId, col) {
+  event && event.stopPropagation && event.stopPropagation();
+  const l = data.lessons.find(x => x.id === lessonId);
+  if (!l) return;
+  const stages = COL_TO_STAGES[col] || [];
+  const today = todayISO();
+  stages.forEach(s => {
+    l.stages[s].status = 'done';
+    if (!l.stages[s].actualStart) l.stages[s].actualStart = today;
+    if (!l.stages[s].actualEnd) l.stages[s].actualEnd = today;
+  });
+  saveData();
+  render();
+  toast(`${lessonId} ${COL_LABELS_SHORT[col]||col} 완료`, 'success');
+}
+function resetStage(lessonId, col) {
+  event && event.stopPropagation && event.stopPropagation();
+  const l = data.lessons.find(x => x.id === lessonId);
+  if (!l) return;
+  const stages = COL_TO_STAGES[col] || [];
+  stages.forEach(s => {
+    l.stages[s].status = 'todo';
+    l.stages[s].actualStart = '';
+    l.stages[s].actualEnd = '';
+  });
+  saveData();
+  render();
+  toast(`${lessonId} ${COL_LABELS_SHORT[col]||col} 시작 전으로`, 'success');
+}
 
 
 const lessonSchedules = {
@@ -854,45 +925,44 @@ function compareLessonId(a, b) {
   if (na !== nb) return na - nb;
   return ma - mb;
 }
-function sortLessons(arr, sortBy) {
+function sortLessonsMulti(arr, keys) {
   const a = arr.slice();
-  if (sortBy === 'phase') {
-    a.sort((x, y) => {
-      const d = (_phaseOrder[x.phase]||99) - (_phaseOrder[y.phase]||99);
-      return d !== 0 ? d : compareLessonId(x.id, y.id);
-    });
-  } else if (sortBy === 'urgency') {
-    a.sort((x, y) => {
-      const d = (_urgOrder[x.urgency||'medium']) - (_urgOrder[y.urgency||'medium']);
-      return d !== 0 ? d : compareLessonId(x.id, y.id);
-    });
-  } else {
-    a.sort((x, y) => compareLessonId(x.id, y.id));
+  function keyDiff(x, y, k) {
+    if (k === 'phase')   return (_phaseOrder[x.phase]||99) - (_phaseOrder[y.phase]||99);
+    if (k === 'urgency') return (_urgOrder[x.urgency||'medium']) - (_urgOrder[y.urgency||'medium']);
+    return compareLessonId(x.id, y.id);
   }
+  a.sort((x, y) => {
+    for (const k of keys) {
+      const d = keyDiff(x, y, k);
+      if (d !== 0) return d;
+    }
+    return 0;
+  });
   return a;
 }
 function getFiltered() {
+  // Phase 다중 선택
+  const activePhases = Array.from(document.querySelectorAll('.phase-tg.active')).map(b => b.dataset.phase);
   const f = {
-    phase: document.getElementById('filter-phase').value,
-    type: document.getElementById('filter-type').value,
-    urgency: document.getElementById('filter-urgency')?.value || '',
-    manuscript: document.getElementById('filter-manuscript')?.value || '',
+    phases: activePhases,
     issue: document.getElementById('filter-issue').value,
     search: document.getElementById('filter-search').value.toLowerCase().trim()
   };
   const filtered = data.lessons.filter(l => {
-    if (f.phase && l.phase !== f.phase) return false;
-    if (f.type && l.type !== f.type) return false;
-    if (f.urgency && (l.urgency||'medium') !== f.urgency) return false;
-    if (f.manuscript === 'received' && !(l.manuscript && l.manuscript.received)) return false;
-    if (f.manuscript === 'pending' && l.manuscript && l.manuscript.received) return false;
+    if (f.phases.length > 0 && !f.phases.includes(l.phase)) return false;
     if (f.search && !(l.id.toLowerCase().includes(f.search) || l.name.toLowerCase().includes(f.search) || l.expert.toLowerCase().includes(f.search))) return false;
     if (f.issue === 'open' && l.issues.filter(i => i.status === 'open').length === 0) return false;
     if (f.issue === 'none' && l.issues.filter(i => i.status === 'open').length > 0) return false;
     return true;
   });
-  const sortBy = document.getElementById('filter-sort')?.value || 'id';
-  return sortLessons(filtered, sortBy);
+  // 다중 키 정렬
+  const key1 = document.getElementById('filter-sort1')?.value || 'id';
+  const key2 = document.getElementById('filter-sort2')?.value || '';
+  const keys = [key1];
+  if (key2 && key2 !== key1) keys.push(key2);
+  if (!keys.includes('id')) keys.push('id'); // 최후 안정 정렬
+  return sortLessonsMulti(filtered, keys);
 }
 function lessonCard(l, draggable = false) {
   const openIssues = l.issues.filter(i => i.status === 'open').length;
@@ -999,16 +1069,20 @@ function renderTable() {
 }
 function renderKanban() {
   const filtered = getFiltered();
-  document.getElementById('count').textContent = `${filtered.length} / ${data.lessons.length} 차시`;
+  // 각 차시를 단계 카드로 분해
+  const allCards = [];
+  filtered.forEach(l => {
+    getKanbanCards(l).forEach(card => allCards.push(card));
+  });
+  document.getElementById('count').textContent = `${filtered.length} 차시 · ${allCards.length}장`;
   const cols = {};
   KANBAN_COLS.forEach(c => cols[c] = []);
-  filtered.forEach(l => {
-    const k = l.kanban || 'plan';
-    if (cols[k]) cols[k].push(l);
-    else cols.plan.push(l);
+  allCards.forEach(card => {
+    if (cols[card.col]) cols[card.col].push(card);
+    else cols.todo.push(card);
   });
   const html = KANBAN_COLS.map(c => {
-    const items = cols[c].map(l => lessonCard(l, true)).join('') || '<div class="kanban-empty">차시 없음</div>';
+    const items = cols[c].map(card => stageCard(card, true)).join('') || '<div class="kanban-empty">카드 없음</div>';
     return `
       <div class="kanban-col" data-col="${c}"
            ondragover="dragOver(event)" ondragenter="dragEnter(event)"
@@ -1019,20 +1093,62 @@ function renderKanban() {
   }).join('');
   document.getElementById('main').innerHTML = `<div class="kanban">${html}</div>`;
 }
+
+function stageCard(card, draggable=false) {
+  const l = card.lesson;
+  const openIssues = l.issues.filter(i => i.status === 'open').length;
+  const dragAttr = draggable ? `draggable="true" ondragstart="dragStartCard(event)" ondragend="dragEnd(event)"` : '';
+  const ls = getLessonScheduleStatus(l);
+  const urgency = l.urgency || 'medium';
+  const msReceived = l.manuscript && l.manuscript.received;
+  const isPending = card.pending;
+  const showActions = card.col !== 'todo' && card.col !== 'done';
+  const stageLabel = COL_LABELS_SHORT[card.col] || '';
+  const cardCls = [
+    'lesson-card',
+    'stage-card',
+    ls.state === 'delayed' ? 'is-delayed' : '',
+    !msReceived ? 'is-ms-pending' : '',
+    isPending ? 'is-pending' : ''
+  ].filter(Boolean).join(' ');
+  return `
+    <div class="${cardCls}" ${dragAttr}
+         data-lesson-id="${l.id}" data-card-col="${card.col}"
+         onclick="openModal('${l.id}')">
+      <div class="lc-phase ${phaseClass(l.phase)}">${l.phase}</div>
+      <div class="lc-sched"><span class="sched-badge ${ls.state}">${ls.label}</span></div>
+      <div class="lc-id">${l.id} ${stageLabel ? `<span class="lc-stage-tag">· ${stageLabel}${isPending ? ' 대기' : ''}</span>` : ''} <span class="urgency-dot ${urgency}" title="우선순위 ${urgency}"></span></div>
+      <div class="lc-name">${l.name}</div>
+      <div class="lc-meta">${l.expert} · ${l.priority || ''}</div>
+      <div class="lc-stages">${progressBars(l)}</div>
+      <div class="lc-stage-labels">
+        <span>기획</span><span>UI</span><span>아트</span><span>개발</span><span>영상</span><span>검수</span>
+      </div>
+      <div class="lc-footer">
+        ${msReceived ? `<span class="badge-ms ok">📄 원고 OK</span>` : `<span class="badge-ms pending">📄 원고 대기</span>`}
+        ${openIssues > 0 ? `<span class="badge-issue">🚨 ${openIssues}</span>` : `<span class="badge-issue ok">CLEAN</span>`}
+        <span class="badge-video">🎬 ${l.videoCount}</span>
+      </div>
+      ${showActions ? `
+        <div class="card-actions">
+          <button class="ca-btn ca-done" onclick="completeStage('${l.id}','${card.col}')" title="이 단계 완료">✓</button>
+          <button class="ca-btn ca-back" onclick="resetStage('${l.id}','${card.col}')" title="이 단계 시작 전으로">✕</button>
+        </div>
+      ` : ''}
+    </div>`;
+}
 function renderIssues() {
   const all = [];
   data.lessons.forEach(l => l.issues.forEach(i => all.push({...i, lessonId:l.id, lessonName:l.name, lessonPhase:l.phase, lessonType:l.type})));
   (data.globalIssues||[]).forEach(i => all.push({...i, lessonId:null, lessonName:'', lessonPhase:'', lessonType:''}));
+  const activePhases = Array.from(document.querySelectorAll('.phase-tg.active')).map(b => b.dataset.phase);
   const f = {
-    phase: document.getElementById('filter-phase').value,
-    type: document.getElementById('filter-type').value,
+    phases: activePhases,
     search: document.getElementById('filter-search').value.toLowerCase().trim()
   };
   let filtered = all.filter(i => {
-    // 일반 이슈는 phase/type 필터 무시 (검색은 적용)
     if (i.lessonId) {
-      if (f.phase && i.lessonPhase !== f.phase) return false;
-      if (f.type && i.lessonType !== f.type) return false;
+      if (f.phases.length > 0 && !f.phases.includes(i.lessonPhase)) return false;
     }
     if (f.search) {
       const txt = (i.title + ' ' + (i.description||'') + ' ' + (i.lessonId||'') + ' ' + (i.category||'')).toLowerCase();
@@ -1299,40 +1415,58 @@ function dragLeave(e) {
   const col = e.target.closest('.kanban-col');
   if (col && !col.contains(e.relatedTarget)) col.classList.remove('drag-over');
 }
+let dragFromCol = null;
+function dragStartCard(e) {
+  const card = e.target.closest('.lesson-card');
+  if (!card) return;
+  dragLessonId = card.dataset.lessonId;
+  dragFromCol = card.dataset.cardCol;
+  card.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
 function drop(e) {
   e.preventDefault();
   const col = e.target.closest('.kanban-col');
   if (!col || !dragLessonId) return;
   const newCol = col.dataset.col;
   const lesson = data.lessons.find(l => l.id === dragLessonId);
-  if (lesson) {
-    lesson.kanban = newCol;
-    // 칸반 컬럼에 따라 단계 status 일괄 업데이트 (이전 단계는 자동 완료)
-    const rule = STAGE_RULES[newCol];
-    const today = todayISO();
-    if (rule) {
-      ['plan','ui','art','dev','video','qa'].forEach(s => {
-        const newStatus = rule[s];
-        lesson.stages[s].status = newStatus;
-        // 자동 실제 일정 기록
-        if (newStatus === 'in-progress' && !lesson.stages[s].actualStart) {
-          lesson.stages[s].actualStart = today;
-        }
-        if (newStatus === 'done') {
-          if (!lesson.stages[s].actualStart) lesson.stages[s].actualStart = today;
-          if (!lesson.stages[s].actualEnd) lesson.stages[s].actualEnd = today;
-        }
-        if (newStatus === 'todo') {
-          lesson.stages[s].actualStart = '';
-          lesson.stages[s].actualEnd = '';
-        }
-      });
-    }
-    saveData();
-    render();
-    toast(`${lesson.id} → ${KANBAN_LABELS[newCol]}`, 'success');
+  if (!lesson) { dragLessonId = null; dragFromCol = null; return; }
+  const today = todayISO();
+  if (newCol === dragFromCol) {
+    // 같은 컬럼에 다시 떨군 경우 — 무시
+  } else if (newCol === 'done') {
+    // 그 카드의 단계만 done
+    const stages = COL_TO_STAGES[dragFromCol] || [];
+    stages.forEach(s => {
+      lesson.stages[s].status = 'done';
+      if (!lesson.stages[s].actualStart) lesson.stages[s].actualStart = today;
+      if (!lesson.stages[s].actualEnd) lesson.stages[s].actualEnd = today;
+    });
+    toast(`${lesson.id} ${COL_LABELS_SHORT[dragFromCol]||''} 완료`, 'success');
+  } else if (newCol === 'todo') {
+    // 그 카드의 단계만 todo
+    const stages = COL_TO_STAGES[dragFromCol] || [];
+    stages.forEach(s => {
+      lesson.stages[s].status = 'todo';
+      lesson.stages[s].actualStart = '';
+      lesson.stages[s].actualEnd = '';
+    });
+    toast(`${lesson.id} ${COL_LABELS_SHORT[dragFromCol]||''} 시작 전`, 'success');
+  } else {
+    // 다른 단계 컬럼으로 → 그 단계에 in-progress 추가 (현재 단계는 그대로)
+    const newStages = COL_TO_STAGES[newCol] || [];
+    newStages.forEach(s => {
+      if (lesson.stages[s].status === 'todo') {
+        lesson.stages[s].status = 'in-progress';
+        if (!lesson.stages[s].actualStart) lesson.stages[s].actualStart = today;
+      }
+    });
+    toast(`${lesson.id} → ${KANBAN_LABELS[newCol]} 진행 중`, 'success');
   }
+  saveData();
+  render();
   dragLessonId = null;
+  dragFromCol = null;
 }
 
 // ============== Modal ==============
@@ -1813,11 +1947,18 @@ document.querySelectorAll('.view-tabs button').forEach(b => {
     render();
   });
 });
-['filter-phase','filter-type','filter-urgency','filter-manuscript','filter-sort','filter-issue','filter-search'].forEach(id => {
+['filter-sort1','filter-sort2','filter-issue','filter-search'].forEach(id => {
   const el = document.getElementById(id);
   if (!el) return;
   el.addEventListener('input', render);
   el.addEventListener('change', render);
+});
+// Phase 토글 그룹 — 다중 선택
+document.querySelectorAll('.phase-tg').forEach(b => {
+  b.addEventListener('click', () => {
+    b.classList.toggle('active');
+    render();
+  });
 });
 document.getElementById('modal-bg').addEventListener('click', e => {
   if (e.target.id === 'modal-bg') closeModal();
