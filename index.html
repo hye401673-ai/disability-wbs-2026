@@ -767,11 +767,15 @@ function dataHash(d) {
   } catch(e) { return Math.random().toString(); }
 }
 
+// 로컬스토리지에 현재 data 저장 (timestamp는 건드리지 않음 — 호출자가 책임)
 function saveLocal() {
   try {
-    data.updated = new Date().toISOString();
     localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
   } catch(e) {}
+}
+// data.updated를 NOW로 갱신 (로컬 편집 시에만 호출)
+function touchUpdated() {
+  data.updated = new Date().toISOString();
 }
 
 function loadFromLocal() {
@@ -825,6 +829,7 @@ function updateStatusLabel() {
 
 function saveData() {
   if (_suppressSave) return;
+  touchUpdated();      // 로컬 편집이므로 timestamp 갱신
   saveLocal();
   updateStatusLabel();
   if (firestoreDisabled || !window.fbSetDoc) return;
@@ -2186,6 +2191,5 @@ function _initSync() {
 if (window.fbReady) _initSync();
 else document.addEventListener('fbready', _initSync);
 </script>
-
 </body>
 </html>
