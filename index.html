@@ -255,6 +255,22 @@ href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/prete
   .ii-desc{font-size:13px;color:var(--cool-gray);margin-top:6px;font-weight:300}
   .ii-meta{font-size:11px;color:var(--cool-gray);margin-top:6px;font-family:'Source Code Pro',monospace;letter-spacing:0.3px}
 
+  /* ===== MOVE/COPY MODAL ===== */
+  .mc-modal-bg{position:fixed;inset:0;background:rgba(0,30,43,0.6);display:flex;align-items:center;justify-content:center;z-index:200;padding:40px 20px;backdrop-filter:blur(4px)}
+  .mc-modal{background:#fff;border:1px solid var(--silver-teal);border-radius:16px;padding:28px;max-width:480px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,0.3)}
+  .mc-modal h3{font-family:'Source Code Pro',monospace;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--forest);margin-bottom:14px}
+  .mc-summary{font-family:'Source Code Pro',monospace;font-size:14px;color:var(--text);margin-bottom:20px;text-align:center;padding:14px;background:var(--bg-light);border-radius:8px;letter-spacing:0.5px}
+  .mc-summary .mc-from,.mc-summary .mc-to{font-weight:700;color:var(--forest)}
+  .mc-summary .mc-arrow{color:var(--cool-gray);margin:0 10px}
+  .mc-options{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+  .mc-option{text-align:left;padding:14px 16px;border:1px solid var(--silver-teal);border-radius:10px;background:#fff;cursor:pointer;transition:all 0.15s;font-family:inherit}
+  .mc-option:hover{border-color:var(--mg-green);background:rgba(0,237,100,0.06);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+  .mc-option-title{font-family:'Source Code Pro',monospace;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest);margin-bottom:6px}
+  .mc-option-desc{font-size:12px;color:var(--cool-gray);line-height:1.55}
+  .mc-option-desc b{color:var(--text);font-weight:600}
+  .mc-cancel{width:100%;padding:10px;border:1px solid var(--silver-teal);border-radius:8px;background:var(--bg-light);cursor:pointer;font-family:'Source Code Pro',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cool-gray);transition:all 0.15s}
+  .mc-cancel:hover{background:var(--silver-teal);color:var(--forest)}
+
   /* ===== MODAL ===== */
   .modal-bg{position:fixed;inset:0;background:rgba(0,30,43,0.6);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:40px 20px;overflow-y:auto;backdrop-filter:blur(4px)}
   .modal-bg.active{display:flex}
@@ -1427,46 +1443,134 @@ function dragStartCard(e) {
 function drop(e) {
   e.preventDefault();
   const col = e.target.closest('.kanban-col');
-  if (!col || !dragLessonId) return;
+  if (!col || !dragLessonId) { dragLessonId = null; dragFromCol = null; return; }
   const newCol = col.dataset.col;
   const lesson = data.lessons.find(l => l.id === dragLessonId);
   if (!lesson) { dragLessonId = null; dragFromCol = null; return; }
   const today = todayISO();
-  if (newCol === dragFromCol) {
-    // 같은 컬럼에 다시 떨군 경우 — 무시
-  } else if (newCol === 'done') {
+  const fromCol = dragFromCol;
+  // drop 직후 dragLessonId/dragFromCol 초기화 (모달이 떠도 상태 꼬임 방지)
+  dragLessonId = null;
+  dragFromCol = null;
+
+  if (newCol === fromCol) {
+    // 같은 컬럼 — 무시
+    return;
+  }
+  if (newCol === 'done') {
     // 그 카드의 단계만 done
-    const stages = COL_TO_STAGES[dragFromCol] || [];
+    const stages = COL_TO_STAGES[fromCol] || [];
     stages.forEach(s => {
       lesson.stages[s].status = 'done';
       if (!lesson.stages[s].actualStart) lesson.stages[s].actualStart = today;
       if (!lesson.stages[s].actualEnd) lesson.stages[s].actualEnd = today;
     });
-    toast(`${lesson.id} ${COL_LABELS_SHORT[dragFromCol]||''} 완료`, 'success');
-  } else if (newCol === 'todo') {
+    toast(`${lesson.id} ${COL_LABELS_SHORT[fromCol]||''} 완료`, 'success');
+    saveData(); render();
+    return;
+  }
+  if (newCol === 'todo') {
     // 그 카드의 단계만 todo
-    const stages = COL_TO_STAGES[dragFromCol] || [];
+    const stages = COL_TO_STAGES[fromCol] || [];
     stages.forEach(s => {
       lesson.stages[s].status = 'todo';
       lesson.stages[s].actualStart = '';
       lesson.stages[s].actualEnd = '';
     });
-    toast(`${lesson.id} ${COL_LABELS_SHORT[dragFromCol]||''} 시작 전`, 'success');
-  } else {
-    // 다른 단계 컬럼으로 → 그 단계에 in-progress 추가 (현재 단계는 그대로)
+    toast(`${lesson.id} ${COL_LABELS_SHORT[fromCol]||''} 시작 전`, 'success');
+    saveData(); render();
+    return;
+  }
+  if (fromCol === 'todo' || fromCol === 'done') {
+    // 시작 전 / 완료 카드를 단계 컬럼으로: 단순 시작
     const newStages = COL_TO_STAGES[newCol] || [];
     newStages.forEach(s => {
-      if (lesson.stages[s].status === 'todo') {
+      if (lesson.stages[s].status !== 'in-progress') {
         lesson.stages[s].status = 'in-progress';
         if (!lesson.stages[s].actualStart) lesson.stages[s].actualStart = today;
+        lesson.stages[s].actualEnd = '';
       }
     });
-    toast(`${lesson.id} → ${KANBAN_LABELS[newCol]} 진행 중`, 'success');
+    toast(`${lesson.id} → ${KANBAN_LABELS[newCol]} 시작`, 'success');
+    saveData(); render();
+    return;
+  }
+  // 단계 → 단계: 이동/복사 묻기
+  showMoveCopyModal(lesson.id, fromCol, newCol);
+}
+
+function showMoveCopyModal(lessonId, fromCol, toCol) {
+  const lesson = data.lessons.find(l => l.id === lessonId);
+  if (!lesson) return;
+  closeMoveCopyModal();
+  const fromLabel = COL_LABELS_SHORT[fromCol] || fromCol;
+  const toLabel = COL_LABELS_SHORT[toCol] || toCol;
+  const root = document.createElement('div');
+  root.id = 'mc-modal-root';
+  root.innerHTML = `
+    <div class="mc-modal-bg" onclick="closeMoveCopyModal()">
+      <div class="mc-modal" onclick="event.stopPropagation()">
+        <h3>${lessonId} 단계 변경</h3>
+        <div class="mc-summary"><span class="mc-from">${fromLabel}</span><span class="mc-arrow">→</span><span class="mc-to">${toLabel}</span></div>
+        <div class="mc-options">
+          <button class="mc-option" onclick="doMoveCopy('${encodeURIComponent(lessonId)}','${fromCol}','${toCol}','move')">
+            <div class="mc-option-title">▶ 이동 (Move)</div>
+            <div class="mc-option-desc"><b>${fromLabel}</b> 완료 처리 + <b>${toLabel}</b> 시작</div>
+          </button>
+          <button class="mc-option" onclick="doMoveCopy('${encodeURIComponent(lessonId)}','${fromCol}','${toCol}','copy')">
+            <div class="mc-option-title">⎘ 복사 (Copy)</div>
+            <div class="mc-option-desc"><b>${fromLabel}</b> 계속 진행 + <b>${toLabel}</b> 시작 (병행 작업)</div>
+          </button>
+        </div>
+        <button class="mc-cancel" onclick="closeMoveCopyModal()">취소</button>
+      </div>
+    </div>`;
+  document.body.appendChild(root);
+}
+
+function closeMoveCopyModal() {
+  const root = document.getElementById('mc-modal-root');
+  if (root) root.remove();
+}
+
+function doMoveCopy(encodedLessonId, fromCol, toCol, action) {
+  const lessonId = decodeURIComponent(encodedLessonId);
+  const lesson = data.lessons.find(l => l.id === lessonId);
+  if (!lesson) { closeMoveCopyModal(); return; }
+  const today = todayISO();
+  const fromStages = COL_TO_STAGES[fromCol] || [];
+  const toStages = COL_TO_STAGES[toCol] || [];
+
+  if (action === 'move') {
+    // 이전 단계 → 완료
+    fromStages.forEach(s => {
+      lesson.stages[s].status = 'done';
+      if (!lesson.stages[s].actualStart) lesson.stages[s].actualStart = today;
+      if (!lesson.stages[s].actualEnd) lesson.stages[s].actualEnd = today;
+    });
+    // 새 단계 → 진행 중
+    toStages.forEach(s => {
+      if (lesson.stages[s].status !== 'in-progress') {
+        lesson.stages[s].status = 'in-progress';
+        if (!lesson.stages[s].actualStart) lesson.stages[s].actualStart = today;
+        lesson.stages[s].actualEnd = '';
+      }
+    });
+    toast(`${lessonId} ${COL_LABELS_SHORT[fromCol]} 완료 → ${COL_LABELS_SHORT[toCol]} 시작`, 'success');
+  } else if (action === 'copy') {
+    // 이전 단계 유지, 새 단계만 진행 중
+    toStages.forEach(s => {
+      if (lesson.stages[s].status !== 'in-progress') {
+        lesson.stages[s].status = 'in-progress';
+        if (!lesson.stages[s].actualStart) lesson.stages[s].actualStart = today;
+        lesson.stages[s].actualEnd = '';
+      }
+    });
+    toast(`${lessonId} ${COL_LABELS_SHORT[fromCol]} + ${COL_LABELS_SHORT[toCol]} 병행`, 'success');
   }
   saveData();
   render();
-  dragLessonId = null;
-  dragFromCol = null;
+  closeMoveCopyModal();
 }
 
 // ============== Modal ==============
@@ -1928,6 +2032,7 @@ document.addEventListener('mouseup', (e) => {
     const newEnd = _addDays(g.origEnd, dayDiff);
     if (newEnd < g.origStart) { render(); return; }
     _applyStageRange(lesson, g.stageKey, null, newEnd);
+    toast(`${g.lessonId} ${stgLabel} 종료 ${dayDiff>0?'+':''}${dayDiff}일`, 'success')
     toast(`${g.lessonId} ${stgLabel} 종료 ${dayDiff>0?'+':''}${dayDiff}일`, 'success');
   } else if (g.mode === 'resize-start') {
     const newStart = _addDays(g.origStart, dayDiff);
@@ -2084,4 +2189,3 @@ else document.addEventListener('fbready', _initSync);
 
 </body>
 </html>
-                      
