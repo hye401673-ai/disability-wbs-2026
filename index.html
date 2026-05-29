@@ -210,12 +210,12 @@ href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/prete
   .gantt-row{display:flex;height:38px;border-bottom:1px solid var(--bg-light);align-items:center;cursor:pointer;transition:background 0.12s;position:relative;z-index:1}
   .gantt-row:hover{background:rgba(0,237,100,0.04)}
   .gantt-row:hover .gantt-label{background:rgba(0,237,100,0.04)}
-  .gantt-label{position:sticky;left:0;background:#fff;flex:0 0 170px;padding:0 12px;border-right:1px solid var(--silver-teal);z-index:2;display:flex;align-items:center;gap:6px;overflow:hidden;box-sizing:border-box;height:100%}
+  .gantt-label{position:sticky;left:0;background:#fff;flex:0 0 170px;padding:0 12px;border-right:1px solid var(--silver-teal);z-index:8;display:flex;align-items:center;gap:6px;overflow:hidden;box-sizing:border-box;height:100%}
   .gantt-label .gantt-id{font-family:'Source Code Pro',monospace;font-size:11px;font-weight:600;color:var(--forest);letter-spacing:0.5px;white-space:nowrap}
   .gantt-label.p1 .gantt-id{color:var(--dark-green)}
   .gantt-label.p2 .gantt-id{color:var(--action-blue)}
   .gantt-issue{font-size:9px;background:#fdedeb;color:#cd2c2c;padding:1px 6px;border-radius:8px;margin-left:auto;font-family:'Source Code Pro',monospace;font-weight:600;letter-spacing:0.5px;white-space:nowrap}
-  .gantt-track{position:relative;height:100%;flex:1}
+  .gantt-track{position:relative;height:100%;flex:0 0 auto}
   .gantt-stage-plan{position:absolute;top:8px;height:22px;border:1.5px solid;border-radius:5px;opacity:0.85;box-sizing:border-box;z-index:1;cursor:grab;transition:opacity 0.12s}
   .gantt-stage-plan:hover{opacity:1;box-shadow:0 2px 6px rgba(0,0,0,0.15)}
   .gantt-stage-plan.dragging{opacity:0.5;cursor:grabbing;z-index:20;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
@@ -232,6 +232,17 @@ href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/prete
   .gantt-today-label{position:absolute;top:4px;left:-26px;background:#cd2c2c;color:#fff;font-family:'Source Code Pro',monospace;font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;letter-spacing:1.2px;white-space:nowrap}
   .gantt-ms{position:absolute;top:0;bottom:0;border-left:1.5px dashed #10b981;z-index:5}
   .gantt-ms-label{position:absolute;top:4px;left:4px;background:var(--forest);color:#34d399;font-family:'Source Code Pro',monospace;font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;letter-spacing:1px;white-space:nowrap;border:1px solid #34d399}
+  .gantt-toggle{appearance:none;background:transparent;border:none;cursor:pointer;color:var(--cool-gray);font-size:9px;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:3px;transition:background 0.12s,color 0.12s;flex-shrink:0;line-height:1}
+  .gantt-toggle:hover{background:rgba(0,237,100,0.18);color:var(--forest)}
+  .gantt-toggle.is-open{color:var(--forest)}
+  .gantt-row.is-sub{height:28px;background:rgba(0,30,43,0.012)}
+  .gantt-row.is-sub:hover{background:rgba(0,237,100,0.04)}
+  .gantt-row.is-sub:hover .gantt-label.is-sub{background:rgba(0,237,100,0.04)}
+  .gantt-label.is-sub{background:rgba(248,249,250,0.96);padding-left:30px;font-family:'Source Code Pro',monospace;font-size:10px;font-weight:500;color:var(--cool-gray);letter-spacing:0.5px;gap:8px;border-right:1px solid var(--silver-teal)}
+  .gantt-sub-marker{display:inline-block;width:8px;height:8px;border-radius:2px;flex-shrink:0}
+  .gantt-sub-name{white-space:nowrap;text-transform:uppercase;font-weight:600;color:var(--forest);font-size:10px;letter-spacing:0.8px}
+  .gantt-row.is-sub .gantt-stage-plan{top:5px;height:18px}
+  .gantt-row.is-sub .gantt-stage-bar{top:9px;height:10px}
 
   /* ===== TABLE ===== */
   table.wbs{width:100%;border-collapse:separate;border-spacing:0;background:#fff;font-size:13px;border:1px solid var(--silver-teal);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-subtle)}
@@ -1283,6 +1294,8 @@ function renderIssues() {
 function renderGantt() {
   const filtered = getFiltered();
   document.getElementById('count').textContent = `${filtered.length} / ${data.lessons.length} 차시 · 📊 간트`;
+  const _expandedRaw = localStorage.getItem('gantt-expanded');
+  const expandedSet = new Set(_expandedRaw ? JSON.parse(_expandedRaw) : []);
 
   const GANTT_START = new Date('2026-05-01');
   const GANTT_END = new Date('2026-12-15');
@@ -1388,15 +1401,57 @@ function renderGantt() {
       return planBar + actBar;
     }).join('');
 
-    return `
-      <div class="gantt-row" data-lesson-id="${l.id}" onclick="openModal('${l.id}')">
+    const isExpanded = expandedSet.has(l.id);
+    const toggleCls = isExpanded ? 'gantt-toggle is-open' : 'gantt-toggle';
+    const toggleIcon = isExpanded ? '▼' : '▶';
+    const mainRow = `
+      <div class="gantt-row" data-lesson-id="${l.id}" style="width:${totalWidth + LABEL_W}px" onclick="openModal('${l.id}')">
         <div class="gantt-label ${phaseCls}">
+          <button class="${toggleCls}" title="단계별 펼치기/접기" onclick="event.stopPropagation();toggleGanttRow('${l.id}')">${toggleIcon}</button>
           <span class="urgency-dot ${urgency}"></span>
           <span class="gantt-id">${l.id}</span>
           ${openIssues > 0 ? `<span class="gantt-issue" title="미해결 이슈 ${openIssues}건">🚨${openIssues}</span>` : ''}
         </div>
-        <div class="gantt-track">${bars}</div>
+        <div class="gantt-track" style="width:${totalWidth}px">${bars}</div>
       </div>`;
+    if (!isExpanded) return mainRow;
+    const subRows = STAGES.map(stg => {
+      const sd = getStageData(l, stg.key);
+      let subBars = '';
+      if (sd.start && sd.end) {
+        const planX = dateToX(sd.start);
+        const planEndX = dateToX(sd.end);
+        const planW = Math.max(DAY_PX, planEndX - planX + DAY_PX);
+        const planBar = `<div class="gantt-stage-plan" data-lesson-id="${l.id}" data-stage-key="${stg.key}" data-start="${sd.start}" data-end="${sd.end}" style="left:${planX}px;width:${planW}px;background:${stg.light};border-color:${stg.color}" title="${stg.label} 계획: ${sd.start} ~ ${sd.end} · 드래그로 이동 · 우측끝 ↔ 으로 기간 조정"></div>`;
+        let actBar = '';
+        if (sd.status === 'done' && sd.actualStart) {
+          const ax = dateToX(sd.actualStart);
+          const aEndDate = sd.actualEnd || sd.end;
+          const aw = Math.max(DAY_PX, dateToX(aEndDate) - ax + DAY_PX);
+          const lateCls = (sd.actualEnd && sd.actualEnd > sd.end) ? ' late' : '';
+          actBar = `<div class="gantt-stage-bar done${lateCls}" style="left:${ax}px;width:${aw}px;background:${stg.color}" title="${stg.label} 완료: ${sd.actualStart} ~ ${sd.actualEnd||'—'}"></div>`;
+        } else if (sd.status === 'in-progress') {
+          const ax = sd.actualStart ? dateToX(sd.actualStart) : planX;
+          const endDate = today < sd.end ? today : sd.end;
+          const aw = Math.max(DAY_PX, dateToX(endDate) - ax + DAY_PX);
+          actBar = `<div class="gantt-stage-bar in-progress" style="left:${ax}px;width:${aw}px;background:${stg.color}" title="${stg.label} 진행 중 (${sd.actualStart || '시작일 미입력'})"></div>`;
+        } else if (sd.status === 'todo' && today > sd.start) {
+          const endX = Math.min(dateToX(today), planEndX);
+          const aw = Math.max(DAY_PX, endX - planX + DAY_PX);
+          actBar = `<div class="gantt-stage-bar delayed" style="left:${planX}px;width:${aw}px" title="${stg.label} 지연 — ${sd.start} 시작 예정인데 미시작"></div>`;
+        }
+        subBars = planBar + actBar;
+      }
+      return `
+        <div class="gantt-row is-sub" data-lesson-id="${l.id}" data-stage="${stg.key}" style="width:${totalWidth + LABEL_W}px" onclick="openModal('${l.id}')">
+          <div class="gantt-label is-sub">
+            <span class="gantt-sub-marker" style="background:${stg.color}"></span>
+            <span class="gantt-sub-name">${stg.label}</span>
+          </div>
+          <div class="gantt-track" style="width:${totalWidth}px">${subBars}</div>
+        </div>`;
+    }).join('');
+    return mainRow + subRows;
   }).join('');
 
   const monthHeader = months.map(m =>
@@ -1437,6 +1492,15 @@ function renderGantt() {
       </div>
     </div>`;
 }
+
+window.toggleGanttRow = function(lessonId) {
+  const raw = localStorage.getItem('gantt-expanded');
+  const expanded = new Set(raw ? JSON.parse(raw) : []);
+  if (expanded.has(lessonId)) expanded.delete(lessonId);
+  else expanded.add(lessonId);
+  localStorage.setItem('gantt-expanded', JSON.stringify([...expanded]));
+  renderGantt();
+};
 
 function render() {
   renderMilestones();
